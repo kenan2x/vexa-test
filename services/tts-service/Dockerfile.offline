@@ -1,0 +1,47 @@
+# Offline TTS image — bakes the Piper voices INTO the image so the runtime
+# needs ZERO internet (the stock Dockerfile downloads voices from HuggingFace
+# on first use, which breaks on an air-gapped server).
+#
+# Build context = REPO ROOT (paths below are services/tts-service/...):
+#   docker buildx build --builder multiplatform --platform linux/amd64 \
+#     -f services/tts-service/Dockerfile.offline \
+#     -t ghcr.io/kenan2x/vexa-tts:tr-offline --push .
+
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libgomp1 && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY services/tts-service/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY services/tts-service/main.py .
+
+RUN mkdir -p /app/voices
+ENV PIPER_VOICES_DIR=/app/voices
+
+# ── Bake the voices (download at build time, HF reachable) ───────────────────
+# Turkish (primary) + English (fallback for lang=en). Same download path the
+# service uses at runtime, so the runtime cache hits with no network call.
+ARG TTS_VOICES="tr_TR-dfki-medium,en_US-amy-medium"
+RUN python -c "from piper.download_voices import download_voice; [download_voice(v.strip(), '/app/voices') for v in '${TTS_VOICES}'.split(',')]" \
+    && ls -la /app/voices
+
+# Only prepare the baked voices at startup; never reach the network at runtime.
+ENV PIPER_DEFAULT_VOICES="tr_TR-dfki-medium,en_US-amy-medium" \
+    HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1 \
+    HF_HUB_DISABLE_TELEMETRY=1 \
+    DO_NOT_TRACK=1
+
+RUN useradd -r -s /bin/false appuser \
+    && chmod -R a+rX /app \
+    && chown -R appuser /app/voices
+USER appuser
+
+EXPOSE 8002
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002"]

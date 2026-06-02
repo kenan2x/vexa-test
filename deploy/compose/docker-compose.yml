@@ -389,7 +389,8 @@ services:
     build:
       context: ../..
       dockerfile: services/tts-service/Dockerfile
-    image: vexaai/tts-service:${IMAGE_TAG}
+    # Override with the offline image (Turkish voice baked in) via TTS_IMAGE in .env
+    image: ${TTS_IMAGE:-vexaai/tts-service:${IMAGE_TAG}}
     mem_limit: 1g
     expose:
       - "8002"

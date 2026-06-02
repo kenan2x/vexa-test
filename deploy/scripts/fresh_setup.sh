@@ -90,8 +90,12 @@ if [ -n "$TOKEN" ]; then
   cd /root/vexa/deploy/compose && make all
   echo ""
   echo "Vexa is running."
-  echo "  Dashboard: http://$(hostname -I | awk '{print $1}'):3001"
-  echo "  API docs:  http://$(hostname -I | awk '{print $1}'):8056/docs"
+  DASH_PORT=$(grep -E '^DASHBOARD_HOST_PORT=' .env 2>/dev/null | cut -d= -f2)
+  DASH_PORT=${DASH_PORT:-3021}
+  API_PORT=$(grep -E '^API_GATEWAY_HOST_PORT=' .env 2>/dev/null | cut -d= -f2)
+  API_PORT=${API_PORT:-8056}
+  echo "  Dashboard: http://$(hostname -I | awk '{print $1}'):$DASH_PORT"
+  echo "  API docs:  http://$(hostname -I | awk '{print $1}'):$API_PORT/docs"
 else
   echo ""
   echo "Skipped deploy (no transcription token). Next steps:"

@@ -1,0 +1,59 @@
+# Offline, single-GPU transcription service — runs STANDALONE on the GPU server.
+# The rest of Vexa (compose stack) runs on a SEPARATE server and reaches this
+# service over the LAN at  http://<this-gpu-server-ip>:8083/v1/audio/transcriptions
+#
+# Key points:
+#   - ONE worker only (the second GPU on this host is busy).
+#   - Worker pinned to a SPECIFIC GPU via device_ids (set GPU_DEVICE_ID to the
+#     free 8GB GPU's index from `nvidia-smi`; default 0). NOT `count: 1`, which
+#     could grab the already-full GPU and OOM.
+#   - NO ./models volume mount — the model is baked into the image; a host mount
+#     would shadow it with an empty dir.
+#   - HF_HUB_OFFLINE=1 — never reach for the network at runtime.
+#   - Uses the prebuilt offline image (built on Mac, shipped here), not `build:`.
+#   - NO external vexa-network — this box only runs transcription; the main
+#     stack lives on another host and connects via the published 8083 port.
+#
+# Bring up:  GPU_DEVICE_ID=0 API_TOKEN=<token> docker compose -f docker-compose.offline.yml up -d
+# Health:    curl http://localhost:8083/health
+
+services:
+  transcription-api:
+    image: nginx:alpine
+    container_name: transcription-lb
+    ports:
+      - "8083:80"
+    volumes:
+      - ./nginx.offline.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - transcription-worker-1
+    restart: unless-stopped
+    networks:
+      - transcription-net
+
+  transcription-worker-1:
+    image: ${TRANSCRIPTION_IMAGE:-vexa-transcription:large-v3-offline}
+    container_name: transcription-worker-1
+    environment:
+      - WORKER_ID=1
+      - MODEL_SIZE=${MODEL_SIZE:-large-v3}
+      - DEVICE=cuda
+      - COMPUTE_TYPE=${COMPUTE_TYPE:-int8}
+      - HF_HUB_OFFLINE=1
+      - TRANSFORMERS_OFFLINE=1
+      - API_TOKEN=${API_TOKEN:?set API_TOKEN}
+      - VAD_MIN_SILENCE_DURATION_MS=80
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${GPU_DEVICE_ID:-0}']
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - transcription-net
+
+networks:
+  transcription-net:
+    driver: bridge

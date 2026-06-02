@@ -106,7 +106,7 @@ Everything else has working defaults for local dev.
 | Variable              | Default             | Description                                                                          |
 | --------------------- | ------------------- | ------------------------------------------------------------------------------------ |
 | IMAGE_TAG             | dev                 | Docker image tag. `dev` pulls from DockerHub. `make build` overrides with local tag. |
-| DASHBOARD_HOST_PORT   | 3001                | Dashboard port                                                                       |
+| DASHBOARD_HOST_PORT   | 3021                | Dashboard port                                                                       |
 | REMOTE_DB             | false               | Use external Postgres instead of local                                               |
 | LOCAL_TRANSCRIPTION   | false               | Run transcription-service locally (needs GPU)                                        |
 | BOT_IMAGE_NAME        | vexaai/vexa-bot:dev | Bot Docker image (follows IMAGE_TAG when built)                                      |
@@ -161,7 +161,7 @@ LOCAL_TRANSCRIPTION=true
 | MCP                               | 18888 | MCP protocol                  |
 | TTS Service                       | 8002  | (internal only)               |
 | Calendar Service *(experimental)* | 8050  | `/health`                     |
-| Dashboard                         | 3001  | HTML page loads               |
+| Dashboard                         | 3021  | HTML page loads               |
 | PostgreSQL                        | 5458  | `pg_isready` (host port)      |
 | MinIO                             | 9000  | Bucket `vexa-recordings`      |
 

@@ -1,0 +1,43 @@
+# Offline CPU image — same model-baking as Dockerfile.offline but on a slim
+# CPU base. Purpose: validate the offline flow LOCALLY on the Mac (arm64),
+# where there is no NVIDIA GPU. Proves: model bakes in, loads with no network,
+# Turkish transcription works, word-level timestamps are present.
+#
+# Build (native arm64 on Mac):
+#   docker build -f Dockerfile.cpu.offline \
+#     --build-arg MODEL_SIZE=large-v3 \
+#     -t vexa-transcription:large-v3-cpu-offline .
+
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    libsndfile1 \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN mkdir -p /app/models
+
+ARG MODEL_SIZE=large-v3
+ARG COMPUTE_TYPE=int8
+RUN python3 -c "from faster_whisper import WhisperModel; WhisperModel('${MODEL_SIZE}', device='cpu', compute_type='${COMPUTE_TYPE}', download_root='/app/models'); print('model baked: ${MODEL_SIZE}')"
+
+ENV HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1 \
+    HF_HUB_DISABLE_TELEMETRY=1 \
+    DEVICE=cpu \
+    COMPUTE_TYPE=int8
+
+COPY main.py .
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+
+CMD ["python3", "main.py"]

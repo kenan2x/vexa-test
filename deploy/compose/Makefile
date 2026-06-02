@@ -277,8 +277,8 @@ logs:
 # --- Test ---
 test: check_docker
 	@echo "Waiting for services to be ready..."
-	@DASH_PORT=$$(grep -E '^DASHBOARD_HOST_PORT=' $(ENV_FILE) 2>/dev/null | cut -d= -f2 || echo "3001"); \
-	DASH_PORT=$${DASH_PORT:-3001}; \
+	@DASH_PORT=$$(grep -E '^DASHBOARD_HOST_PORT=' $(ENV_FILE) 2>/dev/null | cut -d= -f2 || echo "3021"); \
+	DASH_PORT=$${DASH_PORT:-3021}; \
 	for i in 1 2 3 4 5; do \
 		curl -sf "http://localhost:$$DASH_PORT/" > /dev/null 2>&1 && break; \
 		sleep 2; \
@@ -286,8 +286,8 @@ test: check_docker
 	@echo "Checking services..."
 	@API_PORT=$$(grep -E '^API_GATEWAY_HOST_PORT=' $(ENV_FILE) 2>/dev/null | cut -d= -f2 || echo "8056"); \
 	ADMIN_PORT=$$(grep -E '^ADMIN_API_PORT=' $(ENV_FILE) 2>/dev/null | cut -d= -f2 || echo "8057"); \
-	DASH_PORT=$$(grep -E '^DASHBOARD_HOST_PORT=' $(ENV_FILE) 2>/dev/null | cut -d= -f2 || echo "3001"); \
-	API_PORT=$${API_PORT:-8056}; ADMIN_PORT=$${ADMIN_PORT:-8057}; DASH_PORT=$${DASH_PORT:-3001}; \
+	DASH_PORT=$$(grep -E '^DASHBOARD_HOST_PORT=' $(ENV_FILE) 2>/dev/null | cut -d= -f2 || echo "3021"); \
+	API_PORT=$${API_PORT:-8056}; ADMIN_PORT=$${ADMIN_PORT:-8057}; DASH_PORT=$${DASH_PORT:-3021}; \
 	if curl -sf "http://localhost:$$API_PORT/" > /dev/null 2>&1; then \
 		echo "  ✓ API Gateway (port $$API_PORT)"; \
 	else \

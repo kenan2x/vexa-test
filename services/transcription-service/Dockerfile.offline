@@ -1,0 +1,52 @@
+# Offline GPU image — bakes the Whisper model INTO the image at build time
+# so the runtime needs ZERO internet. Build this on a machine WITH internet
+# (e.g. Mac), then ship the image to the air-gapped GPU server.
+#
+# Build (cross-compile for the amd64 GPU server from an arm64 Mac):
+#   docker buildx build --platform linux/amd64 \
+#     -f Dockerfile.offline \
+#     --build-arg MODEL_SIZE=large-v3 \
+#     -t vexa-transcription:large-v3-offline --load .
+#
+# The model is downloaded during build (HF reachable) and stored in /app/models.
+# At runtime HF_HUB_OFFLINE=1 guarantees no network call is ever attempted.
+
+FROM nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
+
+RUN apt-get update && apt-get install -y \
+    python3.10 \
+    python3-pip \
+    curl \
+    libsndfile1 \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN mkdir -p /app/models
+
+# ── Bake the model into the image ────────────────────────────────────────────
+# Uses the EXACT same call path faster-whisper uses at runtime
+# (WhisperModel(name, download_root=/app/models)), so the runtime cache hits.
+# device=cpu here because the build host has no GPU; the cached CTranslate2
+# model files are device-agnostic and load fine on cuda at runtime.
+ARG MODEL_SIZE=large-v3
+ARG COMPUTE_TYPE=int8
+RUN python3 -c "from faster_whisper import WhisperModel; WhisperModel('${MODEL_SIZE}', device='cpu', compute_type='${COMPUTE_TYPE}', download_root='/app/models'); print('model baked: ${MODEL_SIZE}')"
+
+# From here on, never touch the network for model resolution.
+ENV HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1 \
+    HF_HUB_DISABLE_TELEMETRY=1
+
+COPY main.py .
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+
+CMD ["python3", "main.py"]

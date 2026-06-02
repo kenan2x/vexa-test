@@ -19,7 +19,7 @@ ADMIN_API_PORT=8057
 RUNTIME_API_PORT=8090
 AGENT_API_PORT=8100
 CALENDAR_SERVICE_PORT=8050
-DASHBOARD_HOST_PORT=3001
+DASHBOARD_HOST_PORT=3021
 POSTGRES_HOST_PORT=5458
 MCP_HOST_PORT=18888
 MINIO_HOST_PORT=9000
@@ -60,6 +60,12 @@ MINIO_SECURE=false
 
 # TTS uses Piper (local, no API key needed)
 # Voice models auto-download from HuggingFace on first use
+
+# Dashboard public URL — used by NextAuth for magic-link / OAuth callbacks.
+# MUST match the host + DASHBOARD_HOST_PORT above, or login redirects break.
+# Leave blank for basic/no-auth use; set when exposing the dashboard.
+# NEXT_PUBLIC_APP_URL=http://<your-server-ip>:3021
+# NEXTAUTH_URL=http://<your-server-ip>:3021
 
 # Agent API — Claude credentials (optional, for agent-api service)
 CLAUDE_CREDENTIALS_PATH=

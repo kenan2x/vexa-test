@@ -32,7 +32,7 @@ services:
       - transcription-net
 
   transcription-worker-1:
-    image: ${TRANSCRIPTION_IMAGE:-vexa-transcription:large-v3-offline}
+    image: ${TRANSCRIPTION_IMAGE:-ghcr.io/kenan2x/vexa-transcription:large-v3-offline}
     container_name: transcription-worker-1
     environment:
       - WORKER_ID=1

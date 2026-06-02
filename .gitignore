@@ -151,6 +151,7 @@ results/
 test_data/
 *.wav
 !tests/testdata/test-speech-en.wav
+!services/transcription-service/tests/tr_test.wav
 *.webm
 *.mp4
 *.txt

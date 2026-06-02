@@ -61,6 +61,19 @@ MINIO_SECURE=false
 # TTS uses Piper (local, no API key needed)
 # Voice models auto-download from HuggingFace on first use
 
+# Outbound proxy for the meeting bot's browser to reach Teams/Meet/Zoom.
+# HTTPS (intercepting) proxy is fine — the bot ignores cert errors for the
+# meeting platform. Only the browser uses this; internal traffic stays direct.
+# Leave blank if the bot has direct outbound.
+BOT_PROXY_SERVER=
+# Optional: comma-separated hosts the browser should reach WITHOUT the proxy.
+BOT_PROXY_BYPASS=
+
+# Telemetry — fully disabled (no outbound analytics)
+NEXT_TELEMETRY_DISABLED=1
+DO_NOT_TRACK=1
+HF_HUB_DISABLE_TELEMETRY=1
+
 # Dashboard public URL — used by NextAuth for magic-link / OAuth callbacks.
 # MUST match the host + DASHBOARD_HOST_PORT above, or login redirects break.
 # Leave blank for basic/no-auth use; set when exposing the dashboard.

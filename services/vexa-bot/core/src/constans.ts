@@ -56,8 +56,26 @@ const baseBrowserArgs = [
  * - Teams UI: mic muted after join (join.ts)
  * - TTS: unmutes pactl + UI mic before speaking, re-mutes after
  */
+/**
+ * Outbound proxy args for reaching the meeting platform (Teams/Meet/Zoom).
+ * Read from env so the SAME image works with or without a proxy. ONLY the
+ * browser uses this — the bot's internal HTTP (transcription upload, redis,
+ * callbacks) is Node-side and goes direct, never through the proxy.
+ *   BOT_PROXY_SERVER  e.g. http://proxy.corp:3128  (https proxy fine; the bot
+ *                     already runs with --ignore-certificate-errors)
+ *   BOT_PROXY_BYPASS  optional comma-separated hosts that skip the proxy
+ */
+export function getProxyArgs(): string[] {
+  const server = (process.env.BOT_PROXY_SERVER || '').trim();
+  if (!server) return [];
+  const args = [`--proxy-server=${server}`];
+  const bypass = (process.env.BOT_PROXY_BYPASS || '').trim();
+  if (bypass) args.push(`--proxy-bypass-list=${bypass}`);
+  return args;
+}
+
 export function getBrowserArgs(voiceAgentEnabled: boolean = false): string[] {
-  return [...baseBrowserArgs];
+  return [...baseBrowserArgs, ...getProxyArgs()];
 }
 
 /**
@@ -77,6 +95,7 @@ export function getAuthenticatedBrowserArgs(): string[] {
     '--use-file-for-fake-video-capture=/dev/null',
     '--disable-features=VizDisplayCompositor',
     '--password-store=basic',
+    ...getProxyArgs(),
   ];
 }
 
@@ -100,5 +119,6 @@ export function getBrowserSessionArgs(): string[] {
     '--remote-debugging-address=0.0.0.0',
     '--remote-allow-origins=*',
     '--password-store=basic',
+    ...getProxyArgs(),
   ];
 }

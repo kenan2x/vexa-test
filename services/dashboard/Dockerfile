@@ -3,6 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Telemetry off — no outbound analytics at build or runtime
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV DO_NOT_TRACK=1
+
 # Copy transcript-rendering built package
 COPY packages/transcript-rendering/package.json /transcript-rendering/package.json
 COPY packages/transcript-rendering/dist/ /transcript-rendering/dist/

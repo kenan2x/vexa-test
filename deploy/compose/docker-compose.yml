@@ -133,6 +133,9 @@ services:
       - TRANSCRIPTION_SERVICE_TOKEN=${TRANSCRIPTION_SERVICE_TOKEN:-}
       - TTS_SERVICE_URL=http://tts-service:8002
       - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:-vexa-internal-secret}
+      # Proxy injected into spawned bot containers (browser → Teams only)
+      - BOT_PROXY_SERVER=${BOT_PROXY_SERVER:-}
+      - BOT_PROXY_BYPASS=${BOT_PROXY_BYPASS:-}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT:-minio:9000}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-vexa-access-key}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-vexa-secret-key}
@@ -372,6 +375,9 @@ services:
       - VEXA_ALLOW_DIRECT_LOGIN=${VEXA_ALLOW_DIRECT_LOGIN:-true}
       - MINIO_INTERNAL_ENDPOINT=${MINIO_INTERNAL_ENDPOINT:-http://minio:9000}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-}
+      # Telemetry off — no outbound analytics from the dashboard
+      - NEXT_TELEMETRY_DISABLED=1
+      - DO_NOT_TRACK=1
     init: true
     depends_on:
       - api-gateway

@@ -41,6 +41,11 @@ profiles:
       TRANSCRIPTION_SERVICE_TOKEN: "${TRANSCRIPTION_SERVICE_TOKEN}"
       TTS_SERVICE_URL: "${TTS_SERVICE_URL}"
       INTERNAL_API_SECRET: "${INTERNAL_API_SECRET}"
+      # Outbound proxy for the browser to reach the meeting platform (Teams/Meet/Zoom).
+      # Only Chromium uses it; the bot's internal HTTP (transcription, redis) stays
+      # direct. Empty = no proxy.
+      BOT_PROXY_SERVER: "${BOT_PROXY_SERVER:-}"
+      BOT_PROXY_BYPASS: "${BOT_PROXY_BYPASS:-}"
     ports:
       "9222/tcp": {}         # CDP debug port
 
@@ -64,6 +69,8 @@ profiles:
       REDIS_URL: "${REDIS_URL}"
       TTS_SERVICE_URL: "${TTS_SERVICE_URL}"
       INTERNAL_API_SECRET: "${INTERNAL_API_SECRET}"
+      BOT_PROXY_SERVER: "${BOT_PROXY_SERVER:-}"
+      BOT_PROXY_BYPASS: "${BOT_PROXY_BYPASS:-}"
     ports:
       "9222/tcp": {}         # CDP debug port
 

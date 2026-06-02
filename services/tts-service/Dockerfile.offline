@@ -27,7 +27,7 @@ ENV PIPER_VOICES_DIR=/app/voices
 # Turkish (primary) + English (fallback for lang=en). Same download path the
 # service uses at runtime, so the runtime cache hits with no network call.
 ARG TTS_VOICES="tr_TR-dfki-medium,en_US-amy-medium"
-RUN python -c "from piper.download_voices import download_voice; [download_voice(v.strip(), '/app/voices') for v in '${TTS_VOICES}'.split(',')]" \
+RUN python -c "from pathlib import Path; from piper.download_voices import download_voice; [download_voice(v.strip(), Path('/app/voices')) for v in '${TTS_VOICES}'.split(',')]" \
     && ls -la /app/voices
 
 # Only prepare the baked voices at startup; never reach the network at runtime.

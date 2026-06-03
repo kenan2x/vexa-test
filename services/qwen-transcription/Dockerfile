@@ -21,12 +21,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py .
-
-# ── Bake the models (download at build; runtime needs no network) ────────────
+# ── Bake the models FIRST (download at build; runtime needs no network) ──────
+# Kept before COPY main.py so code changes don't re-download the 6 GB of weights.
 ARG QWEN_MODEL=Qwen/Qwen3-ASR-1.7B
 ARG ALIGN_MODEL=MahmoudAshraf/mms-300m-1130-forced-aligner
 RUN python -c "from huggingface_hub import snapshot_download as d; d('${QWEN_MODEL}'); d('${ALIGN_MODEL}'); print('models baked')"
+
+COPY main.py .
 
 ENV QWEN_MODEL=${QWEN_MODEL} \
     ALIGN_MODEL=${ALIGN_MODEL} \

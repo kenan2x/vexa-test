@@ -14,7 +14,7 @@ echo
 
 echo "== 1) Bota VERİLEN transcription URL'i (8083=Whisper / 8084=Qwen) =="
 ENVD="$(docker inspect "$BOT" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null)"
-URL="$(printf '%s' "$ENVD" | grep -oE '"transcriptionServiceUrl":"[^"]*"' | head -1)"
+URL="$(printf '%s' "$ENVD" | grep -oE '"transcriptionServiceUrl": *"[^"]*"' | head -1)"
 if [ -n "$URL" ]; then
   echo "   $URL"
   printf '%s' "$URL" | grep -q ':8084' && grn "   → QWEN'e yönlendirilmiş ✓" || { printf '%s' "$URL" | grep -q ':8083' && ylw "   → WHISPER'a yönlendirilmiş (Qwen değil!)" || ylw "   → başka bir URL"; }

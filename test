@@ -1,0 +1,78 @@
+# =============================================================================$
+# Vexa COMPOSE server M-bM-^@M-^T offline / proxy deployment$
+# Copy to repo root as .env:   cp deploy/env-offline-compose.example .env$
+# Fill in the three <...> values, then:  make all$
+# (runs from repo root; standard images pull from DockerHub during bring-up)$
+# =============================================================================$
+$
+# ---- FILL THESE IN -----------------------------------------------------------$
+$
+# GPU server's transcription service (LAN-reachable from this compose host).$
+# Use the IP of the GPU box where you ran docker-compose.offline.yml.$
+TRANSCRIPTION_SERVICE_URL=http://xxxxx:8083/v1/audio/transcriptions$
+# MUST equal the API_TOKEN you started the transcription service with.$
+TRANSCRIPTION_SERVICE_TOKEN=xxxxxxx$
+$
+# Outbound proxy for the bot's browser to reach Teams (HTTPS proxy OK; the bot$
+# ignores cert errors for the meeting platform). Only Chromium uses it M-bM-^@M-^T the$
+# bot's audio upload to the GPU server stays direct over the LAN.$
+BOT_PROXY_SERVER=http://xxxxx:8080$
+# Optional: comma-separated hosts the browser should reach WITHOUT the proxy.$
+BOT_PROXY_BYPASS=$
+$
+# ---- Custom offline images (built on Mac, pulled from ghcr) -------------------$
+# Proxy-enabled bot + Turkish-voice TTS. The rest pull from DockerHub as-is.$
+BROWSER_IMAGE=ghcr.io/kenan2x/vexa-bot:offline$
+TTS_IMAGE=ghcr.io/kenan2x/vexa-tts:tr-offline$
+$
+# Standard Vexa services come from DockerHub at this tag.$
+IMAGE_TAG=latest$
+$
+# ---- Ports -------------------------------------------------------------------$
+API_GATEWAY_HOST_PORT=8056$
+DASHBOARD_HOST_PORT=3021$
+ADMIN_API_PORT=8057$
+RUNTIME_API_PORT=8090$
+AGENT_API_PORT=8100$
+CALENDAR_SERVICE_PORT=8050$
+POSTGRES_HOST_PORT=5458$
+MCP_HOST_PORT=18888$
+MINIO_HOST_PORT=9900$
+MINIO_CONSOLE_HOST_PORT=9901$
+$
+# ---- Telemetry M-bM-^@M-^T fully disabled (no outbound analytics) ----------------------$
+NEXT_TELEMETRY_DISABLED=1$
+DO_NOT_TRACK=1$
+HF_HUB_DISABLE_TELEMETRY=1$
+$
+# ---- Secrets (CHANGE these for anything beyond a private test) ---------------$
+ADMIN_TOKEN=changeme$
+INTERNAL_API_SECRET=vexa-internal-secret$
+JWT_SECRET=vexa-dev-jwt-secret$
+BOT_API_TOKEN=$
+$
+# ---- Database (embedded postgres) --------------------------------------------$
+DB_NAME=vexa$
+DB_USER=postgres$
+DB_PASSWORD=postgres$
+$
+# ---- Storage (embedded minio) ------------------------------------------------$
+STORAGE_BACKEND=minio$
+MINIO_ENDPOINT=minio:9000$
+MINIO_ACCESS_KEY=vexa-access-key$
+MINIO_SECRET_KEY=vexa-secret-key$
+MINIO_BUCKET=vexa$
+MINIO_SECURE=false$
+$
+# ---- Dashboard public URL (set if you use magic-link / NextAuth login) -------$
+# Must match this host + DASHBOARD_HOST_PORT, or login redirects break.$
+# NEXT_PUBLIC_APP_URL=http://<COMPOSE_SERVER_IP>:3021$
+# NEXTAUTH_URL=http://<COMPOSE_SERVER_IP>:3021$
+# REMOTE_DB=true$
+# DB_HOST=your-postgres-host$
+# DB_PORT=5432$
+# LOCAL_TRANSCRIPTION=true$
+CLAUDE_CREDENTIALS_PATH=$
+CLAUDE_JSON_PATH=$
+# POST_MEETING_HOOKS=https://your-billing-webhook$
+DOCKER_GID=981$

@@ -1,0 +1,21 @@
+######## [COMPOSE sunucusu] ########
+== 1) Servis image'ları (per-bot-model olmalı) ==
+   meeting-api: ghcr.io/kenan2x/vexa-meeting-api:per-bot-model
+[32m     ✓ yeni[0m
+   dashboard  : ghcr.io/kenan2x/vexa-dashboard:per-bot-model
+[32m     ✓ yeni[0m
+
+== 2) .env Qwen URL ==
+[32m   QWEN_TRANSCRIPTION_SERVICE_URL=http://172.30.146.11:8084/v1/audio/transcriptions[0m
+
+== 3) Compose sunucusundan Qwen'e erişim ==
+[32m   ✓ http://172.30.146.11:8084/health → healthy (erişim var)[0m
+
+== 4) meeting-api: fallback uyarısı (qwen→whisper) ==
+[32m   (fallback uyarısı yok)[0m
+
+== 5) Son meeting'lerin seçilen modeli ==
+   (okunamadı)
+
+→ 5'te 'qwen' görüyorsan ama Qwen logunda istek yoksa: erişim sorunu (3'e bak).
+  '?' veya 'whisper' görüyorsan: ya eski image (1) ya boş URL (2) ya formda whisper seçili.

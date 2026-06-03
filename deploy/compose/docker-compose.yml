@@ -401,13 +401,16 @@ services:
     ports:
       - "127.0.0.1:${TTS_SERVICE_HOST_PORT:-8002}:8002"
     environment:
-      - PIPER_DEFAULT_VOICES=${PIPER_DEFAULT_VOICES:-major}
-      - PIPER_LOAD_VOICES=${PIPER_LOAD_VOICES:-en_US-amy-medium,en_US-danny-low,pt_BR-faber-medium,es_ES-davefx-medium}
+      # Offline: only prepare the Turkish voice baked into the image (default
+      # "major" wants 15 voices and downloads the missing ones from HuggingFace,
+      # which crashes on an air-gapped server).
+      - PIPER_DEFAULT_VOICES=${PIPER_DEFAULT_VOICES:-tr_TR-dfki-medium}
+      - PIPER_LOAD_VOICES=${PIPER_LOAD_VOICES:-tr_TR-dfki-medium}
       - PIPER_PRELOAD_STRICT=${PIPER_PRELOAD_STRICT:-true}
       - TTS_API_TOKEN=${TTS_API_TOKEN:-}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
-    volumes:
-      - tts-voices:/app/voices
+    # NOTE: no tts-voices volume — it would shadow the voices baked into the
+    # offline image (/app/voices) with an empty dir.
     init: true
     networks:
       - vexa

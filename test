@@ -1,21 +1,33 @@
-######## [COMPOSE sunucusu] ########
-== 1) Servis image'ları (per-bot-model olmalı) ==
-   meeting-api: ghcr.io/kenan2x/vexa-meeting-api:per-bot-model
-[32m     ✓ yeni[0m
-   dashboard  : ghcr.io/kenan2x/vexa-dashboard:per-bot-model
-[32m     ✓ yeni[0m
+bot container: meeting-4-63561d7c
 
-== 2) .env Qwen URL ==
-[32m   QWEN_TRANSCRIPTION_SERVICE_URL=http://172.30.146.11:8084/v1/audio/transcriptions[0m
+== 1) Bota VERİLEN transcription URL'i (8083=Whisper / 8084=Qwen) ==
+[31m   transcriptionServiceUrl okunamadı. Ham BOT_CONFIG:[0m
+BOT_CONFIG={"meeting_id": 4, "platform": "teams", "meetingUrl": "https://teams.microsoft.com/meet/337094194072793?p=feWDNkQRgVfz3xqdyV", "botName": "Teams AI BOT", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZWV0aW5nX2lkIjo0LCJ1c2VyX2lkIjoxLCJwbGF0Zm9ybSI6InRlYW1zIiwibmF0aXZlX21lZXRpbmdfaWQiOiIzMzcwOTQxOTQwNzI3OTMiLCJzY29wZSI6InRyYW5zY3JpYmU6d3JpdGUiLCJpc3MiOiJtZWV0aW5nLWFwaSIsImF1ZCI6InRyYW5zY3JpcHRpb24tY29sbGVjdG9yIiwiaWF0IjoxNzgwNTAxMDgzLCJleHAiOjE3ODA1MDgyODMsImp0aSI6Ijc0MzQ4YjZjLTViMTEtNGUwNC1hYTI4LTJiMjdjOTg1NTNkMiJ9.4hERi_d_BA09a6aWjaCJh88gOL3UT645wDg7VSCo7vI", "nativeMeetingId":
 
-== 3) Compose sunucusundan Qwen'e erişim ==
-[32m   ✓ http://172.30.146.11:8084/health → healthy (erişim var)[0m
+== 2) STT'ye bağlanma — hata var mı? ==
+[32m   (açık bağlantı hatası görünmüyor)[0m
 
-== 4) meeting-api: fallback uyarısı (qwen→whisper) ==
-[32m   (fallback uyarısı yok)[0m
+== 3) Telemetri — audio STT segmentleri ONAYLANDI mı? ==
+   whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8
+   whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8
+   whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8
+   whisper=83 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8
+   whisper=84 (188ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8
+   whisper=84 (188ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8
 
-== 5) Son meeting'lerin seçilen modeli ==
-   (okunamadı)
+   → confirmed>0  : STT metni kullanılıyor (Whisper/Qwen) — iyi
+   → confirmed=0  : STT atılıyor → metin Teams ALTYAZISINDAN geliyor (kalite düşük, Qwen etkisiz)
 
-→ 5'te 'qwen' görüyorsan ama Qwen logunda istek yoksa: erişim sorunu (3'e bak).
-  '?' veya 'whisper' görüyorsan: ya eski image (1) ya boş URL (2) ya formda whisper seçili.
+== 4) Son birkaç gerçek transkripsiyon satırı (dil/discard) ==
+   {"ts":"2026-06-03T15:53:36.139Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=81 (190ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:54:06.139Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=81 (190ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:54:36.139Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=81 (190ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:55:06.139Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=81 (190ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:55:36.139Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:56:06.138Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:56:36.139Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:57:06.140Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:57:36.140Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=82 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:58:06.141Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=83 (189ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:58:36.140Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=84 (188ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}
+   {"ts":"2026-06-03T15:59:06.141Z","level":"info","meeting_id":4,"session_uid":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","platform":"teams","container_name":"279bd37309c1","connection_id":"9b4d4757-eae7-4e8e-bddb-91a7b84c496b","bot_name":"Teams AI BOT","subsystem":"📊 TELEMETRY","msg":"whisper=84 (188ms avg, 0 failed) | drafts=19 confirmed=11 discarded=8 | confirm_latency=16.8s | whisper_segs/call=n/a | reconfirm=0 | vad=0/0 (checked/rejected)"}

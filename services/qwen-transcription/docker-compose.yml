@@ -1,0 +1,27 @@
+# Qwen3-ASR transcription service — runs on the GPU box, port 8084.
+# OpenAI-compatible /v1/audio/transcriptions, Vexa-shaped response (words[]).
+#
+# Bring up:  GPU_DEVICE_ID=0 API_TOKEN=<token> docker compose up -d
+# Health:    curl http://localhost:8084/health
+
+services:
+  qwen-asr:
+    image: ${QWEN_IMAGE:-vexa-qwen-asr:offline}
+    container_name: qwen-asr
+    ports:
+      - "8084:8000"
+    environment:
+      - DEVICE=cuda:0
+      - DEFAULT_LANG=tr
+      - API_TOKEN=${API_TOKEN:?set API_TOKEN}
+      - HF_HUB_OFFLINE=1
+      - TRANSFORMERS_OFFLINE=1
+      - LOG_LEVEL=INFO
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${GPU_DEVICE_ID:-0}']
+              capabilities: [gpu]
+    restart: unless-stopped

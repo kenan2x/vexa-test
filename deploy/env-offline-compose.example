@@ -37,8 +37,10 @@ AGENT_API_PORT=8100
 CALENDAR_SERVICE_PORT=8050
 POSTGRES_HOST_PORT=5458
 MCP_HOST_PORT=18888
-MINIO_HOST_PORT=9000
-MINIO_CONSOLE_HOST_PORT=9001
+# MinIO host ports moved off the common 9000/9001 to avoid conflicts (these are
+# host-published only; the internal endpoint stays minio:9000 — do not change that).
+MINIO_HOST_PORT=9900
+MINIO_CONSOLE_HOST_PORT=9901
 
 # ---- Telemetry — fully disabled (no outbound analytics) ----------------------
 NEXT_TELEMETRY_DISABLED=1

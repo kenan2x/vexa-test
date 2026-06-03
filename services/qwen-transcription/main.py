@@ -16,9 +16,11 @@ aligner fails, we still return the text with empty words[] (transcription keeps
 working; only per-word speaker attribution degrades).
 """
 import os
+import time
 import tempfile
 import logging
 import threading
+import subprocess
 from typing import Optional
 
 import torch
@@ -141,9 +143,10 @@ async def transcribe(
 ):
     _auth(request, api_key)
     data = await file.read()
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(suffix=".in", delete=False) as tmp:
         tmp.write(data)
-        path = tmp.name
+        raw = tmp.name
+    path = _to_wav16k(raw)              # normalize ANY input (webm/opus/wav) -> 16k mono wav
     try:
         try:
             wav, sr = sf.read(path)
@@ -154,13 +157,30 @@ async def transcribe(
         lang_iso = (language or "").lower().strip() or None
         qwen_lang = QWEN_LANG.get(lang_iso) if lang_iso else None
 
-        with _gpu_lock:
-            results = asr_model.transcribe(audio=path, language=qwen_lang)
-        text = (getattr(results[0], "text", "") or "").strip()
-        detected = (getattr(results[0], "language", None) or lang_iso or DEFAULT_LANG)
+        # --- ASR (Qwen) with error handling so a bad chunk doesn't drop the segment ---
+        t0 = time.time()
+        text = ""
+        detected = lang_iso or DEFAULT_LANG
+        try:
+            with _gpu_lock:
+                results = asr_model.transcribe(audio=path, language=qwen_lang)
+            text = (getattr(results[0], "text", "") or "").strip()
+            detected = (getattr(results[0], "language", None) or lang_iso or DEFAULT_LANG)
+        except Exception as e:
+            logger.error("ASR failed (%d bytes, lang=%s): %s", len(data), qwen_lang, e)
+        t_asr = time.time() - t0
         lang_out = _to_iso1(detected)
 
+        t1 = time.time()
         words = _align_words(path, text, lang_iso or lang_out or DEFAULT_LANG) if text else []
+        t_align = time.time() - t1
+
+        # Per-request visibility: see exactly what Qwen produced for the real audio.
+        logger.info(
+            "REQ in=%dB dur=%.1fs lang=%s asr=%.2fs align=%.2fs words=%d text=%r",
+            len(data), duration, lang_out, t_asr, t_align, len(words),
+            (text[:120] + ("…" if len(text) > 120 else "")),
+        )
 
         segments = []
         if text:
@@ -174,15 +194,33 @@ async def transcribe(
         return {
             "text": text,
             "language": lang_out,
-            "language_probability": 0.99,
+            "language_probability": 0.99 if text else 0.0,
             "duration": duration,
+            "engine": f"qwen3-asr ({MODEL_ID})",
             "segments": segments,
         }
     finally:
-        try:
-            os.unlink(path)
-        except Exception:
-            pass
+        for p in (raw, path):
+            try:
+                os.unlink(p)
+            except Exception:
+                pass
+
+
+def _to_wav16k(src: str) -> str:
+    """Transcode ANY container/codec (webm/opus/wav/...) to 16 kHz mono wav via
+    ffmpeg, so decoding is robust regardless of what the bot uploads. Falls back
+    to the original path if ffmpeg fails."""
+    dst = src + ".16k.wav"
+    try:
+        subprocess.run(
+            ["ffmpeg", "-nostdin", "-y", "-i", src, "-ar", "16000", "-ac", "1", "-f", "wav", dst],
+            check=True, capture_output=True, timeout=30,
+        )
+        return dst
+    except Exception as e:
+        logger.warning("ffmpeg transcode failed (%s) — using raw input", e)
+        return src
 
 
 def _to_iso1(lang) -> str:

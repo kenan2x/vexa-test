@@ -46,6 +46,15 @@ profiles:
       # direct. Empty = no proxy.
       BOT_PROXY_SERVER: "${BOT_PROXY_SERVER:-}"
       BOT_PROXY_BYPASS: "${BOT_PROXY_BYPASS:-}"
+      # Bot's own HTTP (Node side) goes direct to internal services; only
+      # Chromium uses BOT_PROXY_SERVER (for Teams). Disable the daemon-injected
+      # proxy so internal service-name calls don't get routed/blocked by it.
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      NO_PROXY: "*"
+      no_proxy: "*"
     ports:
       "9222/tcp": {}         # CDP debug port
 
@@ -71,6 +80,15 @@ profiles:
       INTERNAL_API_SECRET: "${INTERNAL_API_SECRET}"
       BOT_PROXY_SERVER: "${BOT_PROXY_SERVER:-}"
       BOT_PROXY_BYPASS: "${BOT_PROXY_BYPASS:-}"
+      # Bot's own HTTP (Node side) goes direct to internal services; only
+      # Chromium uses BOT_PROXY_SERVER (for Teams). Disable the daemon-injected
+      # proxy so internal service-name calls don't get routed/blocked by it.
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      NO_PROXY: "*"
+      no_proxy: "*"
     ports:
       "9222/tcp": {}         # CDP debug port
 

@@ -529,6 +529,10 @@ class MeetingCreate(BaseModel):
     bot_name: Optional[str] = Field(None, description="Optional name for the bot in the meeting")
     language: Optional[str] = Field(None, description="Optional language code for transcription (e.g., 'en', 'es'). Forces this single language.")
     task: Optional[str] = Field(None, description="Optional task for the transcription model (e.g., 'transcribe', 'translate')")
+    transcription_model: Optional[str] = Field(
+        None,
+        description="Which transcription backend to route this bot to: 'whisper' (default) or 'qwen'. Maps to a preconfigured service URL server-side."
+    )
     transcription_tier: Optional[str] = Field(
         "realtime",
         description="Transcription priority tier: 'realtime' (default) or 'deferred'"

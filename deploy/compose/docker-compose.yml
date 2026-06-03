@@ -283,7 +283,8 @@ services:
     build:
       context: ../..
       dockerfile: services/meeting-api/Dockerfile
-    image: vexaai/meeting-api:${IMAGE_TAG}
+    # Override with the per-bot-model image (transcription_model selection) via MEETING_IMAGE
+    image: ${MEETING_IMAGE:-vexaai/meeting-api:${IMAGE_TAG}}
     mem_limit: 1g
     expose:
       - "8080"
@@ -335,6 +336,9 @@ services:
       - TRANSCRIPTION_SERVICE_URL=${TRANSCRIPTION_SERVICE_URL:-}
       - TRANSCRIPTION_SERVICE_TOKEN=${TRANSCRIPTION_SERVICE_TOKEN:-}
       - TRANSCRIPTION_GATEWAY_URL=${TRANSCRIPTION_GATEWAY_URL:-}
+      # Alternate STT backend, selected per-bot with transcription_model=qwen
+      - QWEN_TRANSCRIPTION_SERVICE_URL=${QWEN_TRANSCRIPTION_SERVICE_URL:-}
+      - QWEN_TRANSCRIPTION_SERVICE_TOKEN=${QWEN_TRANSCRIPTION_SERVICE_TOKEN:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:

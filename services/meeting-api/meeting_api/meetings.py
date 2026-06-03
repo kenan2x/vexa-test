@@ -1064,6 +1064,22 @@ async def request_bot(
     resolved_max_time_left_alone = resolve_timeout("max_time_left_alone")
     resolved_no_one_joined_timeout = resolve_timeout("no_one_joined_timeout")
 
+    # Per-bot transcription backend selection: 'whisper' (default) or 'qwen'.
+    # Maps the requested model to a preconfigured service URL/token (server-side env),
+    # so the bot is routed to the chosen STT without any bot-side change.
+    _tx_model = (getattr(req, "transcription_model", None) or "").strip().lower()
+    if _tx_model in ("qwen", "qwen3", "qwen3-asr") and os.getenv("QWEN_TRANSCRIPTION_SERVICE_URL"):
+        _tx_url = os.getenv("QWEN_TRANSCRIPTION_SERVICE_URL")
+        _tx_token = os.getenv("QWEN_TRANSCRIPTION_SERVICE_TOKEN")
+        _tx_resolved = "qwen"
+    else:
+        if _tx_model in ("qwen", "qwen3", "qwen3-asr"):
+            logger.warning("transcription_model=qwen requested but QWEN_TRANSCRIPTION_SERVICE_URL unset — falling back to whisper")
+        _tx_url = os.getenv("TRANSCRIPTION_SERVICE_URL")
+        _tx_token = os.getenv("TRANSCRIPTION_SERVICE_TOKEN")
+        _tx_resolved = "whisper"
+    meeting_data["transcription_model"] = _tx_resolved
+
     # Store resolved timeouts in meeting.data for GET /bots visibility
     meeting_data["resolved_timeouts"] = {
         "max_bot_time": resolved_max_bot_time,
@@ -1100,8 +1116,8 @@ async def request_bot(
         "transcribeEnabled": transcribe,
         "captureModes": user_recording_config.get("capture_modes", os.getenv("CAPTURE_MODES", "audio").split(",")),
         "recordingUploadUrl": f"{MEETING_API_URL}/internal/recordings/upload",
-        "transcriptionServiceUrl": os.getenv("TRANSCRIPTION_SERVICE_URL"),
-        "transcriptionServiceToken": os.getenv("TRANSCRIPTION_SERVICE_TOKEN"),
+        "transcriptionServiceUrl": _tx_url,
+        "transcriptionServiceToken": _tx_token,
     }
     if req.recording_enabled is not None:
         bot_config["recordingEnabled"] = bool(req.recording_enabled)

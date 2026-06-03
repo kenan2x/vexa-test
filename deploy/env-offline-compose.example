@@ -13,6 +13,11 @@ TRANSCRIPTION_SERVICE_URL=http://<GPU_SERVER_IP>:8083/v1/audio/transcriptions
 # MUST equal the API_TOKEN you started the transcription service with.
 TRANSCRIPTION_SERVICE_TOKEN=<SAME_TOKEN_AS_GPU_SERVER>
 
+# Alternate STT backend (Qwen3-ASR) — selected per bot with transcription_model=qwen.
+# Leave blank to disable; then transcription_model=qwen falls back to whisper.
+QWEN_TRANSCRIPTION_SERVICE_URL=http://<QWEN_GPU_IP>:8084/v1/audio/transcriptions
+QWEN_TRANSCRIPTION_SERVICE_TOKEN=<QWEN_SERVICE_TOKEN>
+
 # Outbound proxy for the bot's browser to reach Teams (HTTPS proxy OK; the bot
 # ignores cert errors for the meeting platform). Only Chromium uses it — the
 # bot's audio upload to the GPU server stays direct over the LAN.
@@ -24,6 +29,8 @@ BOT_PROXY_BYPASS=
 # Proxy-enabled bot + Turkish-voice TTS. The rest pull from DockerHub as-is.
 BROWSER_IMAGE=ghcr.io/kenan2x/vexa-bot:offline
 TTS_IMAGE=ghcr.io/kenan2x/vexa-tts:tr-offline
+# meeting-api with per-bot transcription_model selection
+MEETING_IMAGE=ghcr.io/kenan2x/vexa-meeting-api:per-bot-model
 
 # Standard Vexa services come from DockerHub at this tag.
 IMAGE_TAG=latest

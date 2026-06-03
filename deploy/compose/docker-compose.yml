@@ -410,7 +410,7 @@ services:
         NEXT_PUBLIC_VEXA_OSS_VERSION: ${VEXA_VERSION:-}
         NEXT_PUBLIC_VEXA_OSS_RELEASE_DATE: ${VEXA_RELEASE_DATE:-}
         VEXA_API_URL: http://api-gateway:8000
-    image: vexaai/dashboard:${IMAGE_TAG}
+    image: ${DASHBOARD_IMAGE:-vexaai/dashboard:${IMAGE_TAG}}
     mem_limit: 1g
     ports:
       - "${DASHBOARD_HOST_PORT:-3021}:3000"

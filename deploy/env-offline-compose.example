@@ -31,6 +31,8 @@ BROWSER_IMAGE=ghcr.io/kenan2x/vexa-bot:offline
 TTS_IMAGE=ghcr.io/kenan2x/vexa-tts:tr-offline
 # meeting-api with per-bot transcription_model selection
 MEETING_IMAGE=ghcr.io/kenan2x/vexa-meeting-api:per-bot-model
+# dashboard with the Whisper/Qwen model dropdown in the join form
+DASHBOARD_IMAGE=ghcr.io/kenan2x/vexa-dashboard:per-bot-model
 
 # Standard Vexa services come from DockerHub at this tag.
 IMAGE_TAG=latest

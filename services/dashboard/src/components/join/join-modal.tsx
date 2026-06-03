@@ -44,6 +44,7 @@ export function JoinModal() {
   const [meetingInput, setMeetingInput] = useState("");
   const [platform, setPlatform] = useState<Platform>("google_meet");
   const [language, setLanguage] = useState("auto");
+  const [transcriptionModel, setTranscriptionModel] = useState("whisper");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transcribeEnabled, setTranscribeEnabled] = useState(true);
   const [botName, setBotName] = useState(() => {
@@ -151,6 +152,10 @@ export function JoinModal() {
 
     if (language && language !== "auto") {
       request.language = language;
+    }
+
+    if (transcriptionModel) {
+      request.transcription_model = transcriptionModel;
     }
 
     if (!transcribeEnabled) {
@@ -522,6 +527,22 @@ export function JoinModal() {
                   Auto-detect: the service will detect the language automatically.
                 </p>
               )}
+            </div>
+          )}
+
+          {/* Transcription model */}
+          {transcribeEnabled && (
+            <div className="space-y-2">
+              <Label htmlFor="transcriptionModel" className="text-sm">Transcription Model</Label>
+              <select
+                id="transcriptionModel"
+                value={transcriptionModel}
+                onChange={(e) => setTranscriptionModel(e.target.value)}
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="whisper">Whisper (large-v3)</option>
+                <option value="qwen">Qwen3-ASR (Türkçe)</option>
+              </select>
             </div>
           )}
 

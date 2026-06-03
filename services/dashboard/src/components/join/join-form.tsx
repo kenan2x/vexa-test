@@ -42,6 +42,7 @@ export function JoinForm({ onSuccess }: JoinFormProps) {
     return "Vexa";
   });
   const [language, setLanguage] = useState("auto");
+  const [transcriptionModel, setTranscriptionModel] = useState("whisper");
   const [transcribeEnabled, setTranscribeEnabled] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,6 +114,10 @@ export function JoinForm({ onSuccess }: JoinFormProps) {
 
     if (language && language !== "auto") {
       request.language = language;
+    }
+
+    if (transcriptionModel) {
+      request.transcription_model = transcriptionModel;
     }
 
     if (!transcribeEnabled) {
@@ -461,6 +466,22 @@ export function JoinForm({ onSuccess }: JoinFormProps) {
                 Auto-detect: the service will detect the language automatically.
               </p>
             )}
+          </div>
+          )}
+
+          {/* Transcription model */}
+          {transcribeEnabled && (
+          <div className="space-y-2">
+            <Label htmlFor="transcriptionModel">Transcription Model</Label>
+            <select
+              id="transcriptionModel"
+              value={transcriptionModel}
+              onChange={(e) => setTranscriptionModel(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="whisper">Whisper (large-v3)</option>
+              <option value="qwen">Qwen3-ASR (Türkçe)</option>
+            </select>
           </div>
           )}
 

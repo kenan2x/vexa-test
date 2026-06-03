@@ -82,6 +82,7 @@ export interface CreateBotRequest {
   language?: string;
   transcribe_enabled?: boolean;
   authenticated?: boolean;
+  transcription_model?: string;
 }
 
 export interface BotConfigUpdate {

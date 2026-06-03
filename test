@@ -1,0 +1,149 @@
+############ 1) Admin user-create via GATEWAY (full status+body) ############
+HTTP/1.1 403 Forbidden
+date: Wed, 03 Jun 2026 11:58:40 GMT
+server: uvicorn
+cache-control: no-cache
+x-xss-protection: 1; mode=block
+connection: Keep-Alive
+content-type: text/html; charset=utf-8
+content-length: 5416
+pragma: no-cache
+x-content-type-options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+x-frame-options: DENY
+x-ratelimit-remaining: 29
+x-ratelimit-limit: 30
+
+<html>
+<head>
+        <title>Access Denied</title>
+        <style type="text/css">
+                html { font-size:100%; /* IE Hack */ margin:0; padding:0; height:100%; }
+                body { font-size:14px; background: #FFFFFF; font-family:  Arial, Verdana, Tahoma, Helvetica; margin:0; padding:0; height:100%; }
+                a:link { color: blue; }
+                a:visited { color: blue; }
+                a:hover { color: blue; }
+                a:active { color: blue; }
+
+############ 2) Admin user-create DIRECT to admin-api (bypass gateway) ############
+HTTP/1.1 201 Created
+date: Wed, 03 Jun 2026 11:58:39 GMT
+server: uvicorn
+content-length: 141
+content-type: application/json
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+referrer-policy: strict-origin-when-cross-origin
+x-frame-options: DENY
+
+{"email":"admin@vexa.ai","name":"Admin","image_url":null,"max_concurrent_bots":10,"data":{},"id":2,"created_at":"2026-06-03T11:58:40.428036"}
+############ 3) admin-api ENV (token karsilastir) ############
+time="2026-06-03T14:58:40+03:00" level=warning msg="The \"AGENT_IMAGE\" variable is not set. Defaulting to a blank string."
+ADMIN_API_TOKEN=changeme
+DB_HOST=postgres
+DB_NAME=vexa
+DB_PASSWORD=postgres
+DB_PORT=5432
+DB_SSL_MODE=disable
+DB_USER=postgres
+INTERNAL_API_SECRET=vexa-internal-secret
+   .env ADMIN_TOKEN=[changeme]
+
+############ 4) admin-api LOGS (tail) ############
+admin-api-1  | INFO:     127.0.0.1:60768 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:52722 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:47902 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:54896 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:53892 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:33678 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:40148 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:51474 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:33158 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:42638 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:45100 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:48576 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:58202 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:57340 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:43960 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:35716 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:53328 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:51146 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:34268 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:41114 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:58102 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:36776 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:52786 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:54438 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:56506 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:53234 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:47594 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:50120 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:51166 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     10.0.29.1:33976 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:49296 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:57502 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:53308 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:53308 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:59730 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:59134 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | INFO:     127.0.0.1:60192 - "GET / HTTP/1.1" 200 OK
+admin-api-1  | 2026-06-03 11:58:40,401 - admin_api - INFO - Admin token verified successfully.
+admin-api-1  | 2026-06-03 11:58:40,435 - admin_api - INFO - Admin created user: admin@vexa.ai (ID: 2)
+admin-api-1  | INFO:     10.0.29.1:47202 - "POST /admin/users HTTP/1.1" 201 Created
+
+############ 5) tts-service LOGS (neden crash) ############
+tts-service-1  |     self._send_output(message_body, encode_chunked=encode_chunked)
+tts-service-1  |   File "/usr/local/lib/python3.10/http/client.py", line 1058, in _send_output
+tts-service-1  |     self.send(msg)
+tts-service-1  |   File "/usr/local/lib/python3.10/http/client.py", line 996, in send
+tts-service-1  |     self.connect()
+tts-service-1  |   File "/usr/local/lib/python3.10/http/client.py", line 1475, in connect
+tts-service-1  |     self.sock = self._context.wrap_socket(self.sock,
+tts-service-1  |   File "/usr/local/lib/python3.10/ssl.py", line 513, in wrap_socket
+tts-service-1  |     return self.sslsocket_class._create(
+tts-service-1  |   File "/usr/local/lib/python3.10/ssl.py", line 1104, in _create
+tts-service-1  |     self.do_handshake()
+tts-service-1  |   File "/usr/local/lib/python3.10/ssl.py", line 1375, in do_handshake
+tts-service-1  |     self._sslobj.do_handshake()
+tts-service-1  | ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1017)
+tts-service-1  | 
+tts-service-1  | During handling of the above exception, another exception occurred:
+tts-service-1  | 
+tts-service-1  | Traceback (most recent call last):
+tts-service-1  |   File "/app/main.py", line 265, in _download_voice_model
+tts-service-1  |     download_voice(voice_name, VOICES_DIR)
+tts-service-1  |   File "/usr/local/lib/python3.10/site-packages/piper/download_voices.py", line 104, in download_voice
+tts-service-1  |     with urlopen(model_url) as response:
+tts-service-1  |   File "/usr/local/lib/python3.10/urllib/request.py", line 216, in urlopen
+tts-service-1  |     return opener.open(url, data, timeout)
+tts-service-1  |   File "/usr/local/lib/python3.10/urllib/request.py", line 519, in open
+tts-service-1  |     response = self._open(req, data)
+tts-service-1  |   File "/usr/local/lib/python3.10/urllib/request.py", line 536, in _open
+tts-service-1  |     result = self._call_chain(self.handle_open, protocol, protocol +
+tts-service-1  |   File "/usr/local/lib/python3.10/urllib/request.py", line 496, in _call_chain
+tts-service-1  |     result = func(*args)
+tts-service-1  |   File "/usr/local/lib/python3.10/urllib/request.py", line 1391, in https_open
+tts-service-1  |     return self.do_open(http.client.HTTPSConnection, req,
+tts-service-1  |   File "/usr/local/lib/python3.10/urllib/request.py", line 1351, in do_open
+tts-service-1  |     raise URLError(err)
+tts-service-1  | urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1017)>
+tts-service-1  | 
+tts-service-1  | The above exception was the direct cause of the following exception:
+tts-service-1  | 
+tts-service-1  | Traceback (most recent call last):
+tts-service-1  |   File "/usr/local/lib/python3.10/site-packages/starlette/routing.py", line 638, in lifespan
+tts-service-1  |     async with self.lifespan_context(app) as maybe_state:
+tts-service-1  |   File "/usr/local/lib/python3.10/contextlib.py", line 199, in __aenter__
+tts-service-1  |     return await anext(self.gen)
+tts-service-1  |   File "/app/main.py", line 368, in lifespan
+tts-service-1  |     _download_voice_model(v)
+tts-service-1  |   File "/app/main.py", line 268, in _download_voice_model
+tts-service-1  |     raise HTTPException(
+tts-service-1  | fastapi.exceptions.HTTPException: 404: Voice 'en_US-danny-low' not found and could not be downloaded: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1017)>
+tts-service-1  | 
+tts-service-1  | ERROR:    Application startup failed. Exiting.
+
+############ 6) tts-service durum ############
+time="2026-06-03T14:58:40+03:00" level=warning msg="The \"AGENT_IMAGE\" variable is not set. Defaulting to a blank string."
+NAME                 IMAGE                                 COMMAND                  SERVICE       CREATED          STATUS                          PORTS
+vexa-tts-service-1   ghcr.io/kenan2x/vexa-tts:tr-offline   "uvicorn main:app --…"   tts-service   45 minutes ago   Restarting (3) 27 seconds ago   

@@ -1,0 +1,47 @@
+# Qwen3-ASR via vLLM (production): vLLM does the batched/async ASR on the GPU,
+# a thin CPU adapter adds Turkish word timestamps + the Vexa response shape.
+#
+# The adapter is named `qwen-asr` and listens on 8084 — same as before — so the
+# compose stack's QWEN_TRANSCRIPTION_SERVICE_URL (…:8084/v1/audio/transcriptions)
+# keeps working unchanged.
+#
+# Bring up:  GPU_DEVICE_ID=0 API_TOKEN=<token> docker compose -f docker-compose.vllm.yml up -d
+
+services:
+  qwen-vllm:
+    image: ${VLLM_IMAGE:-vexa-qwen-vllm:offline}
+    container_name: qwen-vllm
+    environment:
+      - GPU_MEM_UTIL=${GPU_MEM_UTIL:-0.6}      # raise toward 0.9 if the GPU is free
+      - MAX_MODEL_LEN=${MAX_MODEL_LEN:-4096}
+      - HF_HUB_OFFLINE=1
+    shm_size: "4gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${GPU_DEVICE_ID:-0}']
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks: [qwen-net]
+
+  qwen-adapter:
+    image: ${ADAPTER_IMAGE:-vexa-qwen-adapter:offline}
+    container_name: qwen-asr            # keep the old name → existing wiring/logs work
+    ports:
+      - "8084:8084"
+    environment:
+      - VLLM_URL=http://qwen-vllm:8000/v1/audio/transcriptions
+      - VLLM_MODEL=${VLLM_MODEL:-Qwen/Qwen3-ASR-1.7B}
+      - API_TOKEN=${API_TOKEN:?set API_TOKEN}
+      - ALIGN_DEVICE=cpu
+      - DEFAULT_LANG=tr
+      - MIN_AUDIO_SEC=${MIN_AUDIO_SEC:-1.2}    # drop garbled short drafts
+    depends_on: [qwen-vllm]
+    restart: unless-stopped
+    networks: [qwen-net]
+
+networks:
+  qwen-net:
+    driver: bridge

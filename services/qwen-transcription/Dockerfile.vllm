@@ -1,0 +1,30 @@
+# vLLM serving Qwen3-ASR-1.7B (OpenAI /v1/audio/transcriptions), model baked offline.
+#
+# NOTE: vLLM support for Qwen3-ASR is new (Jan 2026). vllm/vllm-openai:latest must
+# include the Qwen3-ASR architecture. If serving fails with "unknown model", switch
+# the base to the official  qwenllm/qwen3-asr:latest  (bundles vLLM + the model).
+#
+# Build (on the GPU box, internet via proxy):
+#   docker build -t vexa-qwen-vllm:offline \
+#     --build-arg HTTP_PROXY=$PROXY --build-arg HTTPS_PROXY=$PROXY \
+#     -f services/qwen-transcription/Dockerfile.vllm services/qwen-transcription
+FROM vllm/vllm-openai:latest
+
+ARG QWEN_MODEL=Qwen/Qwen3-ASR-1.7B
+RUN python3 -c "from huggingface_hub import snapshot_download as d; d('${QWEN_MODEL}'); print('model baked')"
+
+ENV QWEN_MODEL=${QWEN_MODEL} \
+    GPU_MEM_UTIL=0.6 \
+    MAX_MODEL_LEN=4096 \
+    HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1 \
+    HF_HUB_DISABLE_TELEMETRY=1
+
+EXPOSE 8000
+ENTRYPOINT []
+# shell form so the env vars expand
+CMD vllm serve "$QWEN_MODEL" --host 0.0.0.0 --port 8000 \
+    --max-model-len "$MAX_MODEL_LEN" \
+    --gpu-memory-utilization "$GPU_MEM_UTIL" \
+    --tensor-parallel-size 1 \
+    --enforce-eager

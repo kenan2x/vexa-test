@@ -1,0 +1,41 @@
+# Lightweight CPU adapter: forwards audio to vLLM for text, adds Turkish word
+# timestamps (MMS forced aligner), returns Vexa JSON. No GPU needed (keeps the
+# GPU free for vLLM).
+#
+# Build context = repo root:
+#   docker build -t vexa-qwen-adapter:offline \
+#     --build-arg HTTP_PROXY=$PROXY --build-arg HTTPS_PROXY=$PROXY \
+#     -f services/qwen-transcription/Dockerfile.adapter .
+FROM python:3.10-slim
+
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git ffmpeg libsndfile1 curl build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# CPU torch (smaller; aligner runs on CPU)
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
+COPY services/qwen-transcription/requirements.adapter.txt .
+RUN pip install --no-cache-dir -r requirements.adapter.txt
+
+# Bake the MMS aligner model for offline runtime
+ARG ALIGN_MODEL=MahmoudAshraf/mms-300m-1130-forced-aligner
+RUN python -c "from huggingface_hub import snapshot_download as d; d('${ALIGN_MODEL}'); print('aligner baked')"
+
+ENV ALIGN_MODEL=${ALIGN_MODEL} \
+    ALIGN_DEVICE=cpu \
+    HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1 \
+    HF_HUB_DISABLE_TELEMETRY=1 \
+    DO_NOT_TRACK=1 \
+    DEFAULT_LANG=tr \
+    MIN_AUDIO_SEC=1.2
+
+COPY services/qwen-transcription/adapter.py main.py
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8084/health || exit 1
+
+EXPOSE 8084
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8084"]

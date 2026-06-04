@@ -1,0 +1,53 @@
+(vllm) (base) [root@paipsap01 vexa-test]# docker build -t vexa-qwen-adapter:offline \
+> --build-arg HTTP_PROXY=http://10.20.1.140:8080 \
+> --build-arg HTTPS_PROXY=http://10.20.1.140:8080 \
+> -f services/qwen-transcription/Dockerfile.adapter .
+[+] Building 147.0s (13/14)                                                                                                                                                                     docker:default
+ => [internal] load build definition from Dockerfile.adapter                                                                                                                                              0.0s
+ => => transferring dockerfile: 1.98kB                                                                                                                                                                    0.0s
+ => [internal] load metadata for docker.io/library/python:3.10-slim                                                                                                                                       1.0s
+ => [auth] library/python:pull token for registry-1.docker.io                                                                                                                                             0.0s
+ => [internal] load .dockerignore                                                                                                                                                                         0.0s
+ => => transferring context: 76B                                                                                                                                                                          0.0s
+ => [1/9] FROM docker.io/library/python:3.10-slim@sha256:70f65c721aaddfb22b20ed6ec12606c59d9592493c5fcb6639f3d0e8ba3fbc10                                                                                 0.0s
+ => => resolve docker.io/library/python:3.10-slim@sha256:70f65c721aaddfb22b20ed6ec12606c59d9592493c5fcb6639f3d0e8ba3fbc10                                                                                 0.0s
+ => [internal] load build context                                                                                                                                                                         0.0s
+ => => transferring context: 207B                                                                                                                                                                         0.0s
+ => CACHED [2/9] WORKDIR /app                                                                                                                                                                             0.0s
+ => CACHED [3/9] RUN apt-get update && apt-get install -y --no-install-recommends     git ffmpeg libsndfile1 curl build-essential     && rm -rf /var/lib/apt/lists/*                                      0.0s
+ => [4/9] RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu                                                                                               58.6s
+ => [5/9] COPY services/qwen-transcription/requirements.adapter.txt .                                                                                                                                     0.1s
+ => [6/9] RUN pip install --no-cache-dir -r requirements.adapter.txt                                                                                                                                     46.9s
+ => [7/9] RUN python -c "from huggingface_hub import snapshot_download as d; d('MahmoudAshraf/mms-300m-1130-forced-aligner'); print('aligner baked')"                                                    38.8s
+ => ERROR [8/9] RUN python -c "from silero_vad import load_silero_vad; load_silero_vad(); print('vad baked')"                                                                                             1.5s
+------
+ > [8/9] RUN python -c "from silero_vad import load_silero_vad; load_silero_vad(); print('vad baked')":
+1.229 Traceback (most recent call last):
+1.229   File "<string>", line 1, in <module>
+1.229   File "/usr/local/lib/python3.10/site-packages/silero_vad/__init__.py", line 7, in <module>
+1.229     from silero_vad.model import load_silero_vad
+1.229   File "/usr/local/lib/python3.10/site-packages/silero_vad/model.py", line 1, in <module>
+1.229     from .utils_vad import init_jit_model, OnnxWrapper
+1.229   File "/usr/local/lib/python3.10/site-packages/silero_vad/utils_vad.py", line 2, in <module>
+1.229     import torchaudio
+1.229   File "/usr/local/lib/python3.10/site-packages/torchaudio/__init__.py", line 7, in <module>
+1.229     from . import _extension  # noqa  # usort: skip
+1.229   File "/usr/local/lib/python3.10/site-packages/torchaudio/_extension/__init__.py", line 30, in <module>
+1.229     _IS_TORCHAUDIO_EXT_AVAILABLE = _load_lib("_torchaudio")
+1.229   File "/usr/local/lib/python3.10/site-packages/torchaudio/_extension/utils.py", line 56, in _load_lib
+1.229     torch.ops.load_library(paths[0])
+1.229   File "/usr/local/lib/python3.10/site-packages/torch/_ops.py", line 1350, in load_library
+1.230     ctypes.CDLL(path)
+1.230   File "/usr/local/lib/python3.10/ctypes/__init__.py", line 374, in __init__
+1.230     self._handle = _dlopen(self._name, mode)
+1.230 OSError: /usr/local/lib/python3.10/site-packages/torchaudio/lib/_torchaudio.abi3.so: undefined symbol: aoti_torch_abi_version
+------
+Dockerfile.adapter:29
+--------------------
+  27 |
+  28 |     # Warm/validate Silero VAD (model ships inside the pip pkg → offline at runtime)
+  29 | >>> RUN python -c "from silero_vad import load_silero_vad; load_silero_vad(); print('vad baked')"
+  30 |
+  31 |     ENV ALIGN_MODEL=${ALIGN_MODEL} \
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c python -c \"from silero_vad import load_silero_vad; load_silero_vad(); print('vad baked')\"" did not complete successfully: exit code: 1

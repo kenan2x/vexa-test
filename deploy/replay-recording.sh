@@ -20,7 +20,9 @@ MINIO_C="$(docker ps --filter ancestor=minio/minio:latest --format '{{.Names}}' 
 NET="$(docker inspect "$MINIO_C" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' | head -1)"
 echo "minio=$MINIO_C net=$NET"
 
-mcrun(){ docker run --rm --network "$NET" -v "$PWD:/out" --entrypoint sh minio/mc:latest -c \
+mcrun(){ docker run --rm --network "$NET" -v "$PWD:/out" \
+  -e HTTP_PROXY= -e HTTPS_PROXY= -e http_proxy= -e https_proxy= -e NO_PROXY='*' -e no_proxy='*' \
+  --entrypoint sh minio/mc:latest -c \
   "mc alias set v http://minio:9000 '$AK' '$SK' >/dev/null 2>&1; $1"; }
 
 echo

@@ -14,7 +14,9 @@ NET="$(docker inspect "$MC" --format '{{range $k,$v := .NetworkSettings.Networks
 echo "minio=$MC  net=$NET  bucket=$BUCKET  ak=$AK"
 echo
 
-docker run --rm --network "$NET" --entrypoint sh minio/mc:latest -c "
+docker run --rm --network "$NET" \
+  -e HTTP_PROXY= -e HTTPS_PROXY= -e http_proxy= -e https_proxy= -e NO_PROXY='*' -e no_proxy='*' \
+  --entrypoint sh minio/mc:latest -c "
   mc alias set v http://minio:9000 '$AK' '$SK' || { echo '✗ ALIAS/AUTH FAIL — ag ya da anahtar yanlis'; exit 1; }
   echo '=== bucket listesi ==='
   mc ls v/ || echo '(bucket listelenemedi)'

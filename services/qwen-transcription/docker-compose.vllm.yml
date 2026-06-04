@@ -40,6 +40,9 @@ services:
       - ALIGN_DEVICE=cpu
       - DEFAULT_LANG=tr
       - MIN_AUDIO_SEC=${MIN_AUDIO_SEC:-1.2}    # drop garbled short drafts
+      - VAD_ENABLED=${VAD_ENABLED:-1}          # Silero gate: cut silence → no hallucination. Set 0 to A/B test
+      - VAD_THRESHOLD=${VAD_THRESHOLD:-0.5}    # raise → stricter (less noise as speech)
+      - VAD_MIN_SILENCE_MS=${VAD_MIN_SILENCE_MS:-300}
     depends_on: [qwen-vllm]
     restart: unless-stopped
     networks: [qwen-net]

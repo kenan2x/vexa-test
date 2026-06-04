@@ -23,6 +23,13 @@ if [ "${SKIP_BUILD:-0}" != "1" ]; then
     -f "$CTX/Dockerfile.vllm" "$CTX" || {
       echo "✗ build başarısız. 'unknown model' hatası varsa Dockerfile.vllm'de FROM'u"
       echo "  qwenllm/qwen3-asr:latest yap."; exit 1; }
+
+  echo "== [1b] adapter image build (VAD + Türkçe aligner) =="
+  docker build -t vexa-qwen-adapter:offline \
+    --build-arg HTTP_PROXY="$PROXY" --build-arg HTTPS_PROXY="$PROXY" \
+    --build-arg http_proxy="$PROXY" --build-arg https_proxy="$PROXY" \
+    --build-arg NO_PROXY=localhost,127.0.0.1 \
+    -f "$CTX/Dockerfile.adapter" "$ROOT" || { echo "✗ adapter build başarısız"; exit 1; }
 else
   echo "== [1/4] build atlandı (SKIP_BUILD=1) =="
 fi

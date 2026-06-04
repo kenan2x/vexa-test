@@ -23,6 +23,9 @@ RUN pip install --no-cache-dir -r requirements.adapter.txt
 ARG ALIGN_MODEL=MahmoudAshraf/mms-300m-1130-forced-aligner
 RUN python -c "from huggingface_hub import snapshot_download as d; d('${ALIGN_MODEL}'); print('aligner baked')"
 
+# Warm/validate Silero VAD (model ships inside the pip pkg → offline at runtime)
+RUN python -c "from silero_vad import load_silero_vad; load_silero_vad(); print('vad baked')"
+
 ENV ALIGN_MODEL=${ALIGN_MODEL} \
     ALIGN_DEVICE=cpu \
     HF_HUB_OFFLINE=1 \
@@ -30,7 +33,8 @@ ENV ALIGN_MODEL=${ALIGN_MODEL} \
     HF_HUB_DISABLE_TELEMETRY=1 \
     DO_NOT_TRACK=1 \
     DEFAULT_LANG=tr \
-    MIN_AUDIO_SEC=1.2
+    MIN_AUDIO_SEC=1.2 \
+    VAD_ENABLED=1
 
 COPY services/qwen-transcription/adapter.py main.py
 

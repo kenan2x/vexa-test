@@ -1,0 +1,42 @@
+minio=vexa-minio-1 net=vexa_vexa
+
+== Kayıtlı medya dosyaları (son 20) ==
+[2026-06-03 18:11:29 UTC]  53KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000034.webm
+[2026-06-03 18:11:59 UTC] 6.9KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000035.webm
+[2026-06-03 18:12:29 UTC] 6.9KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000036.webm
+[2026-06-03 18:12:59 UTC] 6.9KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000037.webm
+[2026-06-03 18:13:29 UTC] 6.9KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000038.webm
+[2026-06-03 18:13:59 UTC]  34KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000039.webm
+[2026-06-03 18:14:29 UTC]  44KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000040.webm
+[2026-06-03 18:14:59 UTC]  28KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000041.webm
+[2026-06-03 18:15:29 UTC]  15KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000042.webm
+[2026-06-03 18:15:59 UTC]  91KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000043.webm
+[2026-06-03 18:16:29 UTC] 6.9KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000044.webm
+[2026-06-03 18:16:59 UTC] 104KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000045.webm
+[2026-06-03 18:17:29 UTC]  38KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000046.webm
+[2026-06-03 18:17:59 UTC] 198KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000047.webm
+[2026-06-03 18:18:29 UTC] 251KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000048.webm
+[2026-06-03 18:19:00 UTC] 338KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000049.webm
+[2026-06-03 18:19:30 UTC] 253KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000050.webm
+[2026-06-03 18:20:00 UTC] 200KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000051.webm
+[2026-06-03 18:20:14 UTC] 150KiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/000052.webm
+[2026-06-03 18:20:23 UTC] 4.1MiB STANDARD recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/master.webm
+→ seçilen key: recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/master.webm
+
+== İndiriliyor: recordings/1/925021792984/cf51edd0-fa00-4248-9498-501c6fb240e7/audio/master.webm ==
+└──────────┴─────────────┴──────────┴──────────────┘
+-rw-r--r-- 1 root root 4304377 Jun  4 10:39 real-meeting.webm
+
+######## SAF STT — gerçek toplantı sesi, doğrudan (bot/proxy/altyazı YOK) ########
+
+===== WHISPER (mevcut) =====
+HTTP 200
+lang: tr
+text: Merhaba, Test1345. Selamlar, Test 1345. Tesimi yiyor mu? Test123 deneme. Merhaba. Yo, Test124 deneme, merhaba. Herkes orada mı? Ermen1345, bugün günlerden, çarşamba 8-57 pm. Ne yapacağız bugün? kalitesini beğenmedim eskiden daha denememden iyiydi acaba arada kullandığım bir şey vardı da buraları burada süreleri almak için onların böyle oldu diye sorabilirim Mesela ister inanma muhtemel sebep ses farklı eski testin temiz kesintisiz tek dosya bizim gibi kusursuzluğu Gerçek temiz toplantısı, karışık ses, kısa parçalara bölünmüş birkaç saniyelik görüntülü. Küven her ASV gibi temiz olur, ses de çok iyi. Kısa gürültü ve parçalar da belirgin daha zayıf olarak muhtemelen bu liner değil. Tek bir gerilişken son sürümde efektlenme fikriyle 16 kHz'e çevrim ekledim. Küvenden önce burada teorik olarak ses etkileyebilir. Gerçeği görelim küvinin ham uçakta. Bu dizinin betimlemesi Maya Film tarafından Sesli Betimleme Derneği'ne yaptırılmıştır. Derinden geliyor bence. 5 saat bu anda yazıyor. Alo? Ah kelime de mi sesi? Oğlum var ya iyi dedik anasını satayım bu model daha acayip çıktı ya. Şuna baksana. Hele abi bir yerde eksiklik var. Yediyo yediyoo. Anasını s... Bu kadar kötü değildi ya. Bu mal biraz yanlış bir şey yaptı herhalde. ipo'da commit cpu'sumuzu da kurdum düşünsün bir kez daha deneyim güzel vllm almış ne diyor git pull yaptı 5 servis one transaction build vllmsh ne diyor git pull yaptı 5.transaction build vlmsh Aynı Connect Acro API model atarsın. Benim aynen bu tepki şey yok ki. VLA mı? Büyük başarısız. Bu sene garantide destekliyorum. Permission dene ayırmış lan. Bak neye soruyor sonra diyoruz ki. Görsün be. Diğerini çalıştırdık, seri zaten iyiydi ama bir de diğerini test edeyim ya. Büyüklüğünü yaptıktan sonra bozmuş olabilirim acaba. Bunu stop edeyiz.
+
+===== QWEN =====
+HTTP 200
+lang: tr
+text: Merhaba. Teşekkürler. Selamlar. Teşekkürler. Merhaba. Teşekkürler. Teşekkürler. Merhaba. Teşekkürler. Teşekkürler. Merhaba. Herkes orada mı? Merhaba. Teşekkürler. Bugün binlerden kaçmak zor. 8.50. Ne yapacağız? Teşekkürler. Almadım. Herkesin benim eskiden daha eskiden denemeleri iyi. Acaba arada kullandığım şey vardı mı? Buraları burada sürdürülmek mümkün mü? Evet. Mesela. İster inan ister inanma. Muhtemel bir ses farkı. Eskisiyle temiz kesimdeki tek başına bizim gibi kısa bir parça değilmiş. Kısa bir parça değilmiş. Daha zayıf muhtemel bu. Yani değişik. İlk bir değişiklik. Sonunda eskiden değilmiş. Onaltı kişi miydi? Kendi aracında tutarlar. Siz kesilmiş. Gerçi gördüm. Merhaba. Teşekkürler. TeşekAllo. Allo. Başka bir şey. Sesin derinden geliyor bence. Otur otur otur. Otur beş. Allo. Allo. Ah geliyor ses geliyor geliyor. Hoş geldin. Olum var ya. Yedik. Anasınızdın mı? Daha yedik mi ya? Ne oluyor? Ela bir yerde eksiklik var. Yedi yedi yediyor. Allah'ın adını. Doğal bir. Hani bu kadar kötü değil ya. Bu mal biraz yanlış bir şey yaptı galiba. Yapadı komitçe bir yüzüncüde kurum bir yüzüncüde bir kez daha dedi ki bir şey var. Ne diyor? Built pool nedir ya? Built pool yaptı. Ona beş service transaction built yelelim mesaj. Ne diyor? Ne diyor? Built pool yaptı beş service transaction bu ikiyleleme mesaj. Ee. Hani konakta krali pi. Ne varmış bir şey ki? Yerim bir şey sildi ben de sildim. Ateşimizden almışla. Ne söylüyorsunuz ki? Şu anda. Diye mi çalıştık seni? Zaten yedik. Ama bir de diye mi kesildik ya? Bir ne yaptıktan sonra. O zaman soruyorum acaba. O da benim.
+
+→ Bu metin = STT'nin gerçek toplantı sesindeki HAM kalitesi. Botla/altyazıyla alakası yok.

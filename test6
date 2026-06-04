@@ -1,0 +1,100 @@
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) INFO 06-04 08:53:07 [qwen3_asr.py:417] thinker_config is None. Initializing thinker model with default values
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) INFO 06-04 08:53:07 [qwen3_asr.py:417] thinker_config is None. Initializing thinker model with default values
+(APIServer pid=50) `Qwen3ASRProcessor` defines `feature_extractor_class = 'WhisperFeatureExtractor'`, which is deprecated. Register the correct mapping in `AutoFeatureExtractor` instead.
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) INFO 06-04 08:53:08 [qwen3_asr.py:417] thinker_config is None. Initializing thinker model with default values
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) INFO 06-04 08:53:09 [qwen3_asr.py:417] thinker_config is None. Initializing thinker model with default values
+(APIServer pid=50) The following generation flags are not valid and may be ignored: ['temperature']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_section', 'mrope_interleaved'}
+(APIServer pid=50) INFO 06-04 08:53:11 [qwen3_asr.py:417] thinker_config is None. Initializing thinker model with default values
+(EngineCore pid=379) INFO 06-04 08:53:16 [core.py:105] Initializing a V1 LLM engine (v0.19.1) with config: model='/root/.cache/huggingface/hub/models--Qwen--Qwen3-ASR-1.7B/snapshots/7278e1e70fe206f11671096ffdd38061171dd6e5', speculative_config=None, tokenizer='/root/.cache/huggingface/hub/models--Qwen--Qwen3-ASR-1.7B/snapshots/7278e1e70fe206f11671096ffdd38061171dd6e5', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=/root/.cache/huggingface/hub/models--Qwen--Qwen3-ASR-1.7B/snapshots/7278e1e70fe206f11671096ffdd38061171dd6e5, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_images_per_batch': 0, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': True, 'static_all_moe_layers': []}
+(EngineCore pid=379) /usr/local/lib/python3.12/dist-packages/transformers/modeling_rope_utils.py:1032: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+(EngineCore pid=379)   warnings.warn(
+(EngineCore pid=379) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_interleaved', 'mrope_section'}
+(EngineCore pid=379) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_interleaved', 'mrope_section'}
+(EngineCore pid=379) INFO 06-04 08:53:17 [qwen3_asr.py:417] thinker_config is None. Initializing thinker model with default values
+(EngineCore pid=379) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_interleaved', 'mrope_section'}
+(EngineCore pid=379) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_interleaved', 'mrope_section'}
+(EngineCore pid=379) Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'interleaved', 'mrope_interleaved', 'mrope_section'}
+(EngineCore pid=379) INFO 06-04 08:53:17 [qwen3_asr.py:417] thinker_config is None. Initializing thinker model with default values
+(EngineCore pid=379) INFO 06-04 08:53:17 [parallel_state.py:1400] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://172.26.0.2:55751 backend=nccl
+(EngineCore pid=379) INFO 06-04 08:53:17 [parallel_state.py:1716] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+(EngineCore pid=379) Process EngineCore:
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108] EngineCore failed to start.
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108] Traceback (most recent call last):
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core.py", line 1082, in run_engine_core
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     return func(*args, **kwargs)
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core.py", line 848, in __init__
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     super().__init__(
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core.py", line 114, in __init__
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     self.model_executor = executor_class(vllm_config)
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     return func(*args, **kwargs)
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/executor/abstract.py", line 103, in __init__
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     self._init_executor()
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/executor/uniproc_executor.py", line 47, in _init_executor
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     self.driver_worker.init_device()
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/worker/worker_base.py", line 312, in init_device
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     self.worker.init_device()  # type: ignore
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     ^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     return func(*args, **kwargs)
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/worker/gpu_worker.py", line 283, in init_device
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     self.requested_memory = request_memory(init_snapshot, self.cache_config)
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/worker/utils.py", line 413, in request_memory
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108]     raise ValueError(
+(EngineCore pid=379) ERROR 06-04 08:53:17 [core.py:1108] ValueError: Free memory on device cuda:0 (79.56/139.8 GiB) on startup is less than desired GPU memory utilization (0.6, 83.88 GiB). Decrease GPU memory utilization or reduce GPU memory used by other processes.
+(EngineCore pid=379) Traceback (most recent call last):
+(EngineCore pid=379)   File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+(EngineCore pid=379)     self.run()
+(EngineCore pid=379)   File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+(EngineCore pid=379)     self._target(*self._args, **self._kwargs)
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core.py", line 1112, in run_engine_core
+(EngineCore pid=379)     raise e
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core.py", line 1082, in run_engine_core
+(EngineCore pid=379)     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=379)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=379)     return func(*args, **kwargs)
+(EngineCore pid=379)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core.py", line 848, in __init__
+(EngineCore pid=379)     super().__init__(
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core.py", line 114, in __init__
+(EngineCore pid=379)     self.model_executor = executor_class(vllm_config)
+(EngineCore pid=379)                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=379)     return func(*args, **kwargs)
+(EngineCore pid=379)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/executor/abstract.py", line 103, in __init__
+(EngineCore pid=379)     self._init_executor()
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/executor/uniproc_executor.py", line 47, in _init_executor
+(EngineCore pid=379)     self.driver_worker.init_device()
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/worker/worker_base.py", line 312, in init_device
+(EngineCore pid=379)     self.worker.init_device()  # type: ignore
+(EngineCore pid=379)     ^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=379)     return func(*args, **kwargs)
+(EngineCore pid=379)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/worker/gpu_worker.py", line 283, in init_device
+(EngineCore pid=379)     self.requested_memory = request_memory(init_snapshot, self.cache_config)
+(EngineCore pid=379)                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=379)   File "/usr/local/lib/python3.12/dist-packages/vllm/v1/worker/utils.py", line 413, in request_memory
+(EngineCore pid=379)     raise ValueError(
+(EngineCore pid=379) ValueError: Free memory on device cuda:0 (79.56/139.8 GiB) on startup is less than desired GPU memory utilization (0.6, 83.88 GiB). Decrease GPU memory utilization or reduce GPU memory used by other processes.
+[rank0]:[W604 08:53:18.730809381 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

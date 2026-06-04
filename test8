@@ -1,0 +1,47 @@
+simdi bir kez daha yorum yapsana. en iyisi elevenlabs o tamam. whisper ile qwen karşılaştırsana WHISPER
+
+En son adıma gelirsin. Beşinci adıma. Sen aldın mı botu içeriye? Aldım aldım. Aldın botu içeriye. Oldu balım. Aldım. Oldu baldım. Eskiden dahaydı ya. Değil mi? Aynı model değil mi ya? Eskinden daha iyi. Aynı modül almadın mı? Başka modül mü aldın? Sesim geliyor mu? Geliyor. Sizin geliyorum dedim, sizin müdürünüz anlamış. benim slaytı açsana bi tekrar ııı bi dakika sanki dur sakın eşini aradalım ah cpu gpu arasındaki fark bişey hazırlamışsın onu gördüm yakalandın bakıyom ya grupta gruva videomuzda hazırlanmayı çalıştın da ah ya benim şifreyi var ya bu patlatıyor ya ne ya exchange olmuyor Kapat ya. Restarted videos. Evet, bu giriyor. 120'den öpeyim. 100 altın. Şimdi GPU çekişmesi en güçlü ihtimal. Ne anlasın anne ya? Islık çaldım düdü düdüdü diye çevirdi. Ama birden güzel çevirmeye başladı bak. İstik çaldı ama birden güzell çiçekler. Abi bu ne yaa? Çok kötü değil mi? Bir de şey daha deneyeceğim. Topluyorum.
+
+QWEN
+
+nasın olmadı en son adıma gelirsin beşinci adıma sen aldın mı otu içeri ya aldım aldım aldım mutlu içeri oldu baldım baldım oldu baldım o eskiden daha iydi ya değil mi aynı model değil mi ya o eskiden daha iyi Aynı model almadım ben, başka mıdır mı aldım? Sesim geliyor mu? Geliyor. Sizsin geliyorum dedim, sizin müdürünüz anlaşılmış. Benim slayt açsana bir tekrar. Bir dakika ben kalkayım. Üstünleşin hadi dedim. Bak CPU-GP arasındaki fark bir şey yazdırmışsın onu gördüm. Ya çalandın. Bakıyorum ya, Grupta Grupa video mülacat etmeye çalışıyorsun da. Bak ya, bir şey fena değil bu patlatıyor. Ne ya? Exchange online. Video. Yeah, kapatiya. So restarted videos. So long, fellas. Thank you so much. Evet giriyor. 100 200 100 100 altun. Allah. Ne düşünüyorsunuz ki? C P U çöküşü en güçlü ihtimal. Anlıyorsun hangi ya? Ama istik çaldım düdüdüdü diye çevirdi. Ama birden güzel çevirmeye başladı bak. İstik çaldım. Ama birden güzel çiçekler. Abi bu ne ya? Çok kötü değil mi? Bir şey daha deneyeceğim. Topluyorum.
+
+12:11
+Whisper'ı Qwen'e karşı değerlendirdi, Whisper'ın üstünlüğünü doğruladı
+
+Whisper net şekilde daha iyi. İkisinin hata karakterleri farklı ve bu fark önemli:
+
+Qwen'in en ciddi sorunu halüsinasyon. "So long, fellas. Thank you so much." ve "Yeah, kapatiya. So restarted videos" — bunlar seste olmayan, muhtemelen sessizlik/gürültü bölgesinde modelin uydurduğu İngilizce dolgu. Bu, STT'de en tehlikeli hata tipi: yanlış duymak değil, olmayan içerik üretmek. Whisper'da bu yok; onun hataları fonetik bozulma seviyesinde kalıyor.
+
+Qwen anlam da deviriyor: "botu içeriye" → "otu içeri ya" (bot → ot, anlam tamamen değişiyor), "yakalandın" → "ya çalandın", "video hazırlamaya" → "video mülacat etmeye" (uydurma kelime), "GPU çekişmesi" → "C P U çöküşü" (hem yanlış birim hem yanlış kelime, üstelik harf harf yazmış).
+
+Whisper'ın hataları daha "zararsız": "model" → "modül", "Eskiden dahaydı", sayılarda bozulma ("120'den öpeyim. 100 altın"), ve "Mal mısın lan ne ya?"yı "Ne anlasın anne ya?" diye yumuşatması — bu sonuncusu ilginç, küfür/argo bölgesinde kaymış. Ayrıca "ıslık"ı bir kez doğru yazıp ikincide "istik" demesi tutarsız ama Qwen iki kezde de "istik" demiş.
+
+İkisinin ortak zaafı: noktalama/segmentasyon zayıf, diarization yok, sessiz bölgelerde dağılıyorlar.
+
+Özet sıralama aynı kalıyor: ElevenLabs > Whisper >> Qwen. Qwen'i TakasAI tarafında Türkçe STT için düşünüyorsan bu halüsinasyon davranışı tek başına eleme sebebi bence — özellikle toplantı tutanağı gibi senaryoda "söylenmemiş cümle" üretmek kabul edilemez. Bu Qwen3-ASR-1.7B miydi? Daha büyük varyantı varsa onunla bir test daha değer.
+
+peki bunları nasıl cozebiliriz ki?
+12:12
+Çok yönlü çözüm stratejileri tasarladı ve önceliklendirdi
+
+Sorunlar iki kategoriye ayrılıyor, çözümleri de farklı:
+
+1. Halüsinasyon (asıl problem) — çözüm pipeline'da, modelde değil
+
+En etkili tek hamle: VAD ön filtresi. Halüsinasyonların neredeyse tamamı sessizlik, müzik, gürültü bölgelerinden geliyor — model "bir şey duymalıyım" diye uyduruyor. Silero VAD ile konuşma segmentlerini kesip ASR'a sadece onları ver, sessizliği hiç gösterme. faster-whisper'da vad_filter=True ile hazır geliyor; Qwen3-ASR tarafında kendi pipeline'ına Silero'yu önden koyman lazım. Bu, ElevenLabs'taki timestamp kayması sorununu da çözer çünkü alignment sessiz bölgelerde bozuluyordu.
+
+İkinci katman: decode sonrası heuristik filtreler. Türkçe ses akışında İngilizce segment çıkıyorsa düş (langid kontrolü), segment süresi/token oranı anormalse düş, repetition loop yakala (compression ratio kontrolü). Whisper kullanıyorsan ayrıca condition_on_previous_text=False — bir halüsinasyonun sonraki segmentlere bulaşmasını keser.
+
+2. Kelime hataları (botu→otu, model→modül, GPU çekişmesi→CPU çöküşü)
+
+    Context biasing: Qwen3-ASR'ın context/hotword parametresi var — domain terimlerini (GPU, vLLM, exchange, bot, slayt...) prompt olarak verebiliyorsun. Toplantı senaryosunda katılımcı isimleri + proje terimlerini enjekte etmek isabet oranını ciddi artırır.
+    LLM post-correction: zaten elinde Qwen3-8B/122B var. Ham transkripti "Türkçe ASR çıktısını düzelt, domain: BT altyapı" promptuyla geçir. "İstik çaldım → ıslık çaldım" tipi hataları LLM bağlamdan rahat düzeltir. Bu senin Teams Meeting Intelligence planındaki post-meeting katmanına zaten doğal oturuyor.
+
+3. Model/araç seviyesi
+
+    WhisperX dene: faster-whisper + VAD + word-level alignment + pyannote diarization tek pakette. ElevenLabs'ın sana verdiği şeyin (timestamp + speaker) açık kaynak, air-gap uyumlu karşılığı bu. ElevenLabs cloud olduğu için TakasAI'da zaten kullanamazsın.
+    Whisper large-v3 veya Türkçe fine-tune'lu varyantları 1.7B Qwen'den belirgin iyi olur; H200'lerde large-v3 hiç dert değil.
+    Kayıt kalitesi: bu ses telefon hoparlörü/uzak mikrofon gibi duruyordu. 16 kHz mono + loudness normalize + gerekirse DeepFilterNet denoise, modelden önce en ucuz kazanç.
+
+Önerim sıralama: önce Silero VAD'ı araya koy (yarım günlük iş, en büyük etki), sonra context biasing'i test et, en son model değişikliğine bak. İstersen aynı audio.wav üzerinde VAD'lı/VAD'sız Qwen karşılaştırmasını burada sandbox'ta yapıp farkı somut gösterebilirim.

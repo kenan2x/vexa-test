@@ -50,6 +50,18 @@ DEFAULT_LANG = os.getenv("DEFAULT_LANG", "tr").lower()
 MIN_AUDIO_SEC = float(os.getenv("MIN_AUDIO_SEC", "1.2"))  # drop garbled short drafts
 HTTP_TIMEOUT = float(os.getenv("VLLM_TIMEOUT", "60"))
 
+# --- Audio enhancement (clean the signal BEFORE the model sees it) ---
+# Denoise + high-pass + loudness-normalize so quiet/noisy meeting audio is easier
+# for Qwen to transcribe. The bot captures 16k mono "telephone-grade" audio; this
+# doesn't raise fidelity, it just makes words clearer for the ASR. Tunable at
+# runtime via env (no rebuild) and toggleable for A/B (AUDIO_ENHANCE=0).
+AUDIO_ENHANCE = os.getenv("AUDIO_ENHANCE", "1").lower() not in ("0", "false", "no")
+#   highpass=80  -> cut sub-80Hz rumble/hum
+#   afftdn=nf=-25 -> gentle FFT denoise (more negative = more aggressive; -25 is safe)
+#   loudnorm     -> EBU-R128 loudness normalize (boosts quiet speakers, evens levels)
+AUDIO_FILTERS = os.getenv("AUDIO_FILTERS",
+                          "highpass=f=80,afftdn=nf=-25,loudnorm=I=-18:TP=-2:LRA=11")
+
 # --- Silero VAD (silence/noise gate — kills hallucination at the source) ---
 SR = 16000
 VAD_ENABLED         = os.getenv("VAD_ENABLED", "1").lower() not in ("0", "false", "no")
@@ -102,6 +114,8 @@ def _load():
             vad_model = None
     else:
         logger.info("VAD disabled (VAD_ENABLED=0).")
+    logger.info("Audio enhance: %s%s", AUDIO_ENHANCE,
+                (" [%s]" % AUDIO_FILTERS) if AUDIO_ENHANCE else "")
     logger.info("Adapter ready. vLLM=%s model=%s", VLLM_URL, VLLM_MODEL)
 
 
@@ -132,11 +146,27 @@ async def health():
     }
 
 
+def _ffmpeg_wav16k(src: str, dst: str, filters: Optional[str]):
+    cmd = ["ffmpeg", "-nostdin", "-y", "-i", src, "-ar", "16000", "-ac", "1"]
+    if filters:
+        cmd += ["-af", filters]
+    cmd += ["-f", "wav", dst]
+    subprocess.run(cmd, check=True, capture_output=True, timeout=90)
+
+
 def _to_wav16k(src: str) -> str:
+    """Transcode to 16k mono wav. With AUDIO_ENHANCE, also denoise/high-pass/
+    loudness-normalize so the ASR hears cleaner speech. Fail-soft: enhanced →
+    plain → raw, so a bad filter chain never drops the request."""
     dst = src + ".16k.wav"
+    if AUDIO_ENHANCE and AUDIO_FILTERS:
+        try:
+            _ffmpeg_wav16k(src, dst, AUDIO_FILTERS)
+            return dst
+        except Exception as e:
+            logger.warning("enhanced transcode failed (%s) — trying plain", e)
     try:
-        subprocess.run(["ffmpeg", "-nostdin", "-y", "-i", src, "-ar", "16000", "-ac", "1", "-f", "wav", dst],
-                       check=True, capture_output=True, timeout=30)
+        _ffmpeg_wav16k(src, dst, None)
         return dst
     except Exception as e:
         logger.warning("ffmpeg transcode failed (%s) — using raw", e)

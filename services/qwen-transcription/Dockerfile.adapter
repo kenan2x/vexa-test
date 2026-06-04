@@ -44,7 +44,8 @@ ENV ALIGN_MODEL=${ALIGN_MODEL} \
     DO_NOT_TRACK=1 \
     DEFAULT_LANG=tr \
     MIN_AUDIO_SEC=1.2 \
-    VAD_ENABLED=1
+    VAD_ENABLED=1 \
+    AUDIO_ENHANCE=1
 
 COPY services/qwen-transcription/adapter.py main.py
 

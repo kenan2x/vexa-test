@@ -1,0 +1,177 @@
+[sistem@plainode01 transcribe-ui]$ git pull
+remote: Enumerating objects: 9, done.
+remote: Counting objects: 100% (9/9), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 5 (delta 4), reused 5 (delta 4), pack-reused 0 (from 0)
+Unpacking objects: 100% (5/5), 1.10 KiB | 1.10 MiB/s, done.
+From https://github.com/kenan2x/vexa-test
+   ef9db23..8101b13  main       -> origin/main
+Updating ef9db23..8101b13
+Fast-forward
+ services/transcribe-ui/main.py | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+[sistem@plainode01 transcribe-ui]$ docker pull ghcr.io/kenan2x/vexa-transcribe-ui:latest
+latest: Pulling from kenan2x/vexa-transcribe-ui
+5b4d6ff92fc4: Already exists
+8649771fee17: Already exists
+797d495f2c68: Already exists
+45006ceeeea9: Already exists
+504d4d8f4b90: Already exists
+b8de71449ab0: Already exists
+e81b849c2f25: Already exists
+e38944b01951: Already exists
+b1ba36d374d2: Pull complete
+Digest: sha256:91685c5cd74b54225275acf1b5d370b1698ca24691787d08f1a0ef92bc027f48
+Status: Downloaded newer image for ghcr.io/kenan2x/vexa-transcribe-ui:latest
+ghcr.io/kenan2x/vexa-transcribe-ui:latest
+[sistem@plainode01 transcribe-ui]$ docker compose --env-file ../../.env -f docker-compose.yml up -d --force-recreate
+[+] Running 1/1
+ ✔ Container transcribe-ui  Started                                                                                                                                                                       0.9s
+[sistem@plainode01 transcribe-ui]$
+[sistem@plainode01 transcribe-ui]$
+[sistem@plainode01 transcribe-ui]$ docker compose -f^C
+[sistem@plainode01 transcribe-ui]$ cd
+[sistem@plainode01 ~]$ cd vexa/
+[sistem@plainode01 vexa]$ ls
+alembic.ini  CONTRIBUTING.md              docker-compose.override.yml  env-example.cpu     fresh_setup.sh  LICENSE                nbs                         scripts      testing
+assets       docker                       docker-compose.yml           env-example.gpu     issues          Makefile               performance_test_report.md  SECURITY.md  tests
+CLA          docker-compose.local-db.yml  docs                         env-example.remote  libs            monitor_allocation.py  README.md                   services
+[sistem@plainode01 vexa]$ git pull
+remote: Enumerating objects: 9490, done.
+remote: Counting objects: 100% (3309/3309), done.
+remote: Compressing objects: 100% (1384/1384), done.
+remote: Total 9490 (delta 2104), reused 1939 (delta 1925), pack-reused 6181 (from 3)
+Receiving objects: 100% (9490/9490), 7.04 MiB | 5.52 MiB/s, done.
+Resolving deltas: 100% (5239/5239), completed with 126 local objects.
+From https://github.com/Vexa-ai/vexa
+   61cfe8d4..48a2bdca  main                                                                -> origin/main
+ * [new branch]        codex/adversarial-hardening                                         -> origin/codex/adversarial-hardening
+ * [new branch]        codex/agents-pack-pipeline-strategy                                 -> origin/codex/agents-pack-pipeline-strategy
+ * [new branch]        codex/pack-0.10.6x-pack-1-recording-playback-trust                  -> origin/codex/pack-0.10.6x-pack-1-recording-playback-trust
+ * [new branch]        codex/pack-0.10.6x-pack-2-speak-audio-delivery                      -> origin/codex/pack-0.10.6x-pack-2-speak-audio-delivery
+ * [new branch]        codex/pack-0.10.6x-pack-3-meeting-admission-platform-join-semantics -> origin/codex/pack-0.10.6x-pack-3-meeting-admission-platform-join-semantics
+ * [new branch]        codex/pack-0.10.6x-pack-4-stop-delete-lifecycle-convergence         -> origin/codex/pack-0.10.6x-pack-4-stop-delete-lifecycle-convergence
+ * [new branch]        codex/pack-0.10.6x-pack-5-billing-webhook-idempotency               -> origin/codex/pack-0.10.6x-pack-5-billing-webhook-idempotency
+ * [new branch]        codex/pack-0.10.6x-pack-6-self-hosted-browser-edge                  -> origin/codex/pack-0.10.6x-pack-6-self-hosted-browser-edge
+ * [new branch]        codex/pack-0.10.6x-pack-7-release-identity-packaging-hardening      -> origin/codex/pack-0.10.6x-pack-7-release-identity-packaging-hardening
+ * [new branch]        codex/pack-0.10.6x-pack-zoom-sdk-restore-capability-boundary        -> origin/codex/pack-0.10.6x-pack-zoom-sdk-restore-capability-boundary
+ * [new branch]        codex/pack-meet-join-fix-gmeet-join                                 -> origin/codex/pack-meet-join-fix-gmeet-join
+ * [new branch]        codex/pack-pack-msteams-diarization-cutover                         -> origin/codex/pack-pack-msteams-diarization-cutover
+ * [new branch]        codex/pack-pack-msteams-local-diarization-rnd                       -> origin/codex/pack-pack-msteams-local-diarization-rnd
+ * [new branch]        codex/release-0.10.6.2.1                                            -> origin/codex/release-0.10.6.2.1
+ * [new branch]        codex/release-0.10.6.3-candidate                                    -> origin/codex/release-0.10.6.3-candidate
+ * [new branch]        codex/release-0.10.6x-integration-supervisor-banner                 -> origin/codex/release-0.10.6x-integration-supervisor-banner
+ * [new branch]        codex/release-0.10.6x-pack-integration                              -> origin/codex/release-0.10.6x-pack-integration
+ * [new branch]        codex/revert-v0.10.6.1                                              -> origin/codex/revert-v0.10.6.1
+ * [new branch]        codex/review-squash/pack-1-recording-playback-trust                 -> origin/codex/review-squash/pack-1-recording-playback-trust
+ * [new branch]        codex/review-squash/pack-2-speak-audio-delivery                     -> origin/codex/review-squash/pack-2-speak-audio-delivery
+ * [new branch]        codex/review-squash/pack-3                                          -> origin/codex/review-squash/pack-3
+ * [new branch]        codex/review-squash/pack-3-meeting-admission                        -> origin/codex/review-squash/pack-3-meeting-admission
+ * [new branch]        codex/review-squash/pack-370                                        -> origin/codex/review-squash/pack-370
+ * [new branch]        codex/review-squash/pack-4                                          -> origin/codex/review-squash/pack-4
+ * [new branch]        codex/review-squash/pack-4-stop-delete-lifecycle                    -> origin/codex/review-squash/pack-4-stop-delete-lifecycle
+ * [new branch]        codex/review-squash/pack-5                                          -> origin/codex/review-squash/pack-5
+ * [new branch]        codex/review-squash/pack-5-billing-webhook-idempotency              -> origin/codex/review-squash/pack-5-billing-webhook-idempotency
+ * [new branch]        codex/review-squash/pack-6                                          -> origin/codex/review-squash/pack-6
+ * [new branch]        codex/review-squash/pack-6-self-hosted-browser-edge                 -> origin/codex/review-squash/pack-6-self-hosted-browser-edge
+ * [new branch]        codex/review-squash/pack-7                                          -> origin/codex/review-squash/pack-7
+ * [new branch]        codex/review-squash/pack-7-release-identity-packaging               -> origin/codex/review-squash/pack-7-release-identity-packaging
+ * [new branch]        codex/review-squash/pack-msteams-local-diarization-rnd-mvp0         -> origin/codex/review-squash/pack-msteams-local-diarization-rnd-mvp0
+ * [new branch]        fix/browser-session-pod-lifecycle                                   -> origin/fix/browser-session-pod-lifecycle
+ * [new branch]        fix/mintlify-mdx-parse-errors-clean                                 -> origin/fix/mintlify-mdx-parse-errors-clean
+ * [new branch]        gh-pages                                                            -> origin/gh-pages
+ * [new branch]        oenb-cherrypick-260517                                              -> origin/oenb-cherrypick-260517
+ * [new branch]        release/260422-release-plumbing                                     -> origin/release/260422-release-plumbing
+ * [new branch]        release/260422-zoom-sdk                                             -> origin/release/260422-zoom-sdk
+ * [new branch]        release/260426                                                      -> origin/release/260426
+ * [new branch]        release/260427                                                      -> origin/release/260427
+ * [new branch]        release/260501-chunk-leak                                           -> origin/release/260501-chunk-leak
+ * [new branch]        release/260501-followup                                             -> origin/release/260501-followup
+ * [new branch]        release/260508-v0.10.6.1                                            -> origin/release/260508-v0.10.6.1
+ * [new branch]        release/260508-v0.10.6.1-rerelease                                  -> origin/release/260508-v0.10.6.1-rerelease
+ * [new branch]        release/meet-join-fix                                               -> origin/release/meet-join-fix
+ * [new tag]           0.10.5.2                                                            -> 0.10.5.2
+ * [new tag]           0.10.6                                                              -> 0.10.6
+ * [new tag]           v0.10                                                               -> v0.10
+ * [new tag]           v0.10.1                                                             -> v0.10.1
+ * [new tag]           v0.10.2                                                             -> v0.10.2
+ * [new tag]           v0.10.3                                                             -> v0.10.3
+ * [new tag]           v0.10.4                                                             -> v0.10.4
+ * [new tag]           v0.10.5                                                             -> v0.10.5
+ * [new tag]           v0.10.5.1                                                           -> v0.10.5.1
+ * [new tag]           v0.10.5.2                                                           -> v0.10.5.2
+ * [new tag]           v0.10.6                                                             -> v0.10.6
+ * [new tag]           v0.10.6.1                                                           -> v0.10.6.1
+ * [new tag]           v0.10.6.2                                                           -> v0.10.6.2
+ * [new tag]           v0.10.6.3                                                           -> v0.10.6.3
+ * [new tag]           v0.9                                                                -> v0.9
+ * [new tag]           vexa-0.10.3                                                         -> vexa-0.10.3
+ * [new tag]           vexa-0.10.4                                                         -> vexa-0.10.4
+ * [new tag]           vexa-0.10.5                                                         -> vexa-0.10.5
+ * [new tag]           vexa-0.10.6                                                         -> vexa-0.10.6
+ * [new tag]           vexa-0.10.6+2                                                       -> vexa-0.10.6+2
+Updating 61cfe8d4..48a2bdca
+error: Your local changes to the following files would be overwritten by merge:
+        services/bot-manager/app/orchestrator_utils.py
+        services/vexa-bot/core/src/constans.ts
+        services/vexa-bot/core/src/platforms/msteams/admission.ts
+        services/vexa-bot/core/src/platforms/msteams/join.ts
+Please commit your changes or stash them before you merge.
+Aborting
+[sistem@plainode01 vexa]$
+[sistem@plainode01 vexa]$
+[sistem@plainode01 vexa]$
+[sistem@plainode01 vexa]$
+[sistem@plainode01 vexa]$ vi .env
+[sistem@plainode01 vexa]$ ls
+alembic.ini  CONTRIBUTING.md              docker-compose.override.yml  env-example.cpu     fresh_setup.sh  LICENSE                nbs                         scripts      testing
+assets       docker                       docker-compose.yml           env-example.gpu     issues          Makefile               performance_test_report.md  SECURITY.md  tests
+CLA          docker-compose.local-db.yml  docs                         env-example.remote  libs            monitor_allocation.py  README.md                   services
+[sistem@plainode01 vexa]$ pwd
+/home/sistem/vexa
+[sistem@plainode01 vexa]$ cd ..
+[sistem@plainode01 ~]$ ls
+1          cisco             dockerfile            kapportal            llmguard-test  opencod                                  phonix          searxng-calisan  translate-google
+agent      cisco-telemetry   hitachi-mon           kap-skor             minio-test     openobserve-mcp                          projects        self-hosted      translater-llm
+bindplane  cribl-test        infisical-test        librechat            nxos-test      openwebui                                safeguard-test  takascert.cert   vexa
+cert       deerflow-calisan  jina-calisan-sonhali  librechat-authentik  ollama-api     otelcol-contrib_0.129.1_linux_amd64.rpm  scrape-test     translate        Vexa-Dashboard
+[sistem@plainode01 ~]$ cd vexa/
+assets/   CLA/      docker/   docs/     .git/     .github/  issues/   libs/     .local/   nbs/      scripts/  services/ testing/  tests/
+[sistem@plainode01 ~]$ cd
+[sistem@plainode01 ~]$ cd vexa/
+assets/   CLA/      docker/   docs/     .git/     .github/  issues/   libs/     .local/   nbs/      scripts/  services/ testing/  tests/
+[sistem@plainode01 ~]$ cd vexa/
+assets/   CLA/      docker/   docs/     .git/     .github/  issues/   libs/     .local/   nbs/      scripts/  services/ testing/  tests/
+[sistem@plainode01 ~]$ cd vexa/
+assets/   CLA/      docker/   docs/     .git/     .github/  issues/   libs/     .local/   nbs/      scripts/  services/ testing/  tests/
+[sistem@plainode01 ~]$ cd vexa/
+[sistem@plainode01 vexa]$ ls
+alembic.ini  CONTRIBUTING.md              docker-compose.override.yml  env-example.cpu     fresh_setup.sh  LICENSE                nbs                         scripts      testing
+assets       docker                       docker-compose.yml           env-example.gpu     issues          Makefile               performance_test_report.md  SECURITY.md  tests
+CLA          docker-compose.local-db.yml  docs                         env-example.remote  libs            monitor_allocation.py  README.md                   services
+[sistem@plainode01 vexa]$ vi .env
+[sistem@plainode01 vexa]$ pwd
+/home/sistem/vexa
+[sistem@plainode01 vexa]$ cd ..
+[sistem@plainode01 ~]$ ls
+1          cisco             dockerfile            kapportal            llmguard-test  opencod                                  phonix          searxng-calisan  translate-google
+agent      cisco-telemetry   hitachi-mon           kap-skor             minio-test     openobserve-mcp                          projects        self-hosted      translater-llm
+bindplane  cribl-test        infisical-test        librechat            nxos-test      openwebui                                safeguard-test  takascert.cert   vexa
+cert       deerflow-calisan  jina-calisan-sonhali  librechat-authentik  ollama-api     otelcol-contrib_0.129.1_linux_amd64.rpm  scrape-test     translate        Vexa-Dashboard
+[sistem@plainode01 ~]$ cd vexa/
+assets/   CLA/      docker/   docs/     .git/     .github/  issues/   libs/     .local/   nbs/      scripts/  services/ testing/  tests/
+[sistem@plainode01 ~]$ ls
+1          cisco             dockerfile            kapportal            llmguard-test  opencod                                  phonix          searxng-calisan  translate-google
+agent      cisco-telemetry   hitachi-mon           kap-skor             minio-test     openobserve-mcp                          projects        self-hosted      translater-llm
+bindplane  cribl-test        infisical-test        librechat            nxos-test      openwebui                                safeguard-test  takascert.cert   vexa
+cert       deerflow-calisan  jina-calisan-sonhali  librechat-authentik  ollama-api     otelcol-contrib_0.129.1_linux_amd64.rpm  scrape-test     translate        Vexa-Dashboard
+[sistem@plainode01 ~]$ cd vexa/
+[sistem@plainode01 vexa]$ git pull
+Updating 61cfe8d4..48a2bdca
+error: Your local changes to the following files would be overwritten by merge:
+        services/bot-manager/app/orchestrator_utils.py
+        services/vexa-bot/core/src/constans.ts
+        services/vexa-bot/core/src/platforms/msteams/admission.ts
+        services/vexa-bot/core/src/platforms/msteams/join.ts
+Please commit your changes or stash them before you merge.
+Aborting

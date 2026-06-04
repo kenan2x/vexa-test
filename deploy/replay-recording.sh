@@ -26,12 +26,19 @@ mcrun(){ docker run --rm --network "$NET" -v "$PWD:/out" \
   "mc alias set v http://minio:9000 '$AK' '$SK' >/dev/null 2>&1; $1"; }
 
 echo
-echo "== Kayıtlı ses dosyaları (son 15) =="
-LIST="$(mcrun "mc ls --recursive v/$BUCKET/ 2>/dev/null | grep -iE 'audio/.*\.webm'")"
-echo "$LIST" | tail -15
-KEY="$(echo "$LIST" | grep -i 'master.webm' | tail -1 | awk '{print $NF}')"
+echo "== Kayıtlı medya dosyaları (son 20) =="
+LIST="$(mcrun "mc ls --recursive v/$BUCKET/ 2>/dev/null | grep -iE '\.(webm|wav|m4a|mp4|ogg|opus|mka)$'")"
+echo "$LIST" | tail -20
+# tercih sırası: audio/master → herhangi master → audio/* → en son medya dosyası
+KEY="$(echo "$LIST" | grep -iE 'audio/.*master' | tail -1 | awk '{print $NF}')"
+[ -z "$KEY" ] && KEY="$(echo "$LIST" | grep -i 'master'  | tail -1 | awk '{print $NF}')"
+[ -z "$KEY" ] && KEY="$(echo "$LIST" | grep -iE 'audio/' | tail -1 | awk '{print $NF}')"
 [ -z "$KEY" ] && KEY="$(echo "$LIST" | tail -1 | awk '{print $NF}')"
-[ -z "$KEY" ] && { echo "Kayıt bulunamadı (recording açık bir toplantı yaptın mı?)"; exit 1; }
+if [ -z "$KEY" ]; then
+  echo "Medya dosyası bulunamadı. Bucket'taki TÜM içerik:"
+  mcrun "mc ls --recursive v/$BUCKET/ 2>&1 | head -40"
+  exit 1
+fi
 
 echo
 echo "== İndiriliyor: $KEY =="

@@ -87,9 +87,25 @@ def duration(key: str):
 @app.get("/api/audio")
 def audio(key: str):
     try:
-        return Response(content=_get(key), media_type="audio/webm")
+        data = _get(key)
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=404)
+    # Transcode to wav so even MediaRecorder *fragment* chunks (no EBML header)
+    # play in the browser. Master files play; tiny fragments at least don't hang.
+    with tempfile.NamedTemporaryFile(suffix=".bin", delete=False) as t:
+        t.write(data); src = t.name
+    dst = src + ".wav"
+    try:
+        subprocess.run(["ffmpeg", "-nostdin", "-y", "-i", src, "-ar", "16000", "-ac", "1", dst],
+                       capture_output=True, timeout=180)
+        if os.path.exists(dst) and os.path.getsize(dst) > 44:
+            with open(dst, "rb") as f:
+                return Response(content=f.read(), media_type="audio/wav")
+        return Response(content=data, media_type="audio/webm")
+    finally:
+        for p in (src, dst):
+            try: os.unlink(p)
+            except Exception: pass
 
 
 def _segment(data: bytes, seg_sec: int):
@@ -279,7 +295,10 @@ function finish(){if(es){es.close();es=null}go.disabled=false;stopb.style.displa
 let mr=null,recording=false,iv=null;
 async function toggleRec(){
   if(recording){recording=false;clearInterval(iv);if(mr&&mr.state!=='inactive')mr.stop();recbtn.textContent='● Kaydı başlat';recbtn.classList.add('rec');lm_status.textContent='durdu';return}
-  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){alert('mikrofon: '+e);return}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    lm_status.innerHTML='<span style="color:#e88">Mikrofon yalnız HTTPS veya localhost\'ta açılır — düz http://ip üzerinden tarayıcı engelliyor.</span><br><span class=muted>Çözüm: (a) SSH tüneli ile localhost\'tan aç, ya da (b) Chrome → <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code> → bu adresi ekle → Relaunch.</span>';
+    return;}
+  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){lm_status.textContent='mikrofon hatası: '+e;return}
   const models=[];if(lm_whisper.checked)models.push('whisper');if(lm_qwen.checked)models.push('qwen');if(!models.length){alert('Model seç');return}
   live.textContent='';recording=true;recbtn.textContent='■ Durdur';recbtn.classList.remove('rec');lm_status.textContent='kaydediliyor...';
   mr=new MediaRecorder(st,{mimeType:'audio/webm'});

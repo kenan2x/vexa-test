@@ -56,19 +56,23 @@ HTTP_TIMEOUT = float(os.getenv("VLLM_TIMEOUT", "60"))
 # doesn't raise fidelity, it just makes words clearer for the ASR. Tunable at
 # runtime via env (no rebuild) and toggleable for A/B (AUDIO_ENHANCE=0).
 AUDIO_ENHANCE = os.getenv("AUDIO_ENHANCE", "1").lower() not in ("0", "false", "no")
-#   highpass=80  -> cut sub-80Hz rumble/hum
-#   afftdn=nf=-25 -> gentle FFT denoise (more negative = more aggressive; -25 is safe)
-#   loudnorm     -> EBU-R128 loudness normalize (boosts quiet speakers, evens levels)
+# Speech-SAFE default: high-pass + loudness only. These never remove speech;
+# loudnorm actually BOOSTS quiet speakers so we miss less. FFT denoise (afftdn)
+# can eat faint speech, so it's OPT-IN — if a meeting has constant background
+# noise, set AUDIO_FILTERS to add it, e.g.:
+#   highpass=f=80,afftdn=nr=10:nf=-40,loudnorm=I=-18:TP=-2:LRA=11
+#   (nr=reduction dB, lower nf=gentler; raise nr / nf→-25 for more aggressive)
 AUDIO_FILTERS = os.getenv("AUDIO_FILTERS",
-                          "highpass=f=80,afftdn=nf=-25,loudnorm=I=-18:TP=-2:LRA=11")
+                          "highpass=f=80,loudnorm=I=-18:TP=-2:LRA=11")
 
 # --- Silero VAD (silence/noise gate — kills hallucination at the source) ---
 SR = 16000
 VAD_ENABLED         = os.getenv("VAD_ENABLED", "1").lower() not in ("0", "false", "no")
-VAD_THRESHOLD       = float(os.getenv("VAD_THRESHOLD", "0.5"))      # speech prob cutoff
-VAD_MIN_SILENCE_MS  = int(os.getenv("VAD_MIN_SILENCE_MS", "300"))   # gap to split on
+# Conservative defaults: we'd rather keep a bit of noise than CUT a quiet speaker.
+VAD_THRESHOLD       = float(os.getenv("VAD_THRESHOLD", "0.4"))      # 0.4 (not 0.5) → catch quieter speech
+VAD_MIN_SILENCE_MS  = int(os.getenv("VAD_MIN_SILENCE_MS", "400"))   # only split on clearly long gaps
 VAD_MIN_SPEECH_MS   = int(os.getenv("VAD_MIN_SPEECH_MS", "150"))    # drop tiny blips
-VAD_SPEECH_PAD_MS   = int(os.getenv("VAD_SPEECH_PAD_MS", "120"))    # keep word edges
+VAD_SPEECH_PAD_MS   = int(os.getenv("VAD_SPEECH_PAD_MS", "250"))    # generous pad → don't clip word edges
 # After cutting silence, if the remaining speech is shorter than this, treat the
 # chunk as "no real speech" and return empty (a 0.6s blip in 4s of silence is noise).
 VAD_MIN_TOTAL_SEC   = float(os.getenv("VAD_MIN_TOTAL_SEC", "0.4"))

@@ -41,10 +41,11 @@ services:
       - DEFAULT_LANG=tr
       - MIN_AUDIO_SEC=${MIN_AUDIO_SEC:-1.2}    # drop garbled short drafts
       - VAD_ENABLED=${VAD_ENABLED:-1}          # Silero gate: cut silence → no hallucination. Set 0 to A/B test
-      - VAD_THRESHOLD=${VAD_THRESHOLD:-0.5}    # raise → stricter (less noise as speech)
-      - VAD_MIN_SILENCE_MS=${VAD_MIN_SILENCE_MS:-300}
-      - AUDIO_ENHANCE=${AUDIO_ENHANCE:-1}      # denoise+highpass+loudnorm before ASR. Set 0 to A/B test
-      - AUDIO_FILTERS=${AUDIO_FILTERS:-highpass=f=80,afftdn=nf=-25,loudnorm=I=-18:TP=-2:LRA=11}
+      - VAD_THRESHOLD=${VAD_THRESHOLD:-0.4}    # 0.4 catches quiet speakers; raise → stricter, lower → keep more
+      - VAD_MIN_SILENCE_MS=${VAD_MIN_SILENCE_MS:-400}
+      - VAD_SPEECH_PAD_MS=${VAD_SPEECH_PAD_MS:-250}
+      - AUDIO_ENHANCE=${AUDIO_ENHANCE:-1}      # highpass+loudnorm before ASR (speech-safe). Set 0 to A/B test
+      - AUDIO_FILTERS=${AUDIO_FILTERS:-highpass=f=80,loudnorm=I=-18:TP=-2:LRA=11}
     depends_on: [qwen-vllm]
     restart: unless-stopped
     networks: [qwen-net]

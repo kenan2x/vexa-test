@@ -27,7 +27,9 @@ mcrun(){ docker run --rm --network "$NET" -v "$PWD:/out" \
 
 echo
 echo "== Kayıtlı medya dosyaları (son 20) =="
-LIST="$(mcrun "mc ls --recursive v/$BUCKET/ 2>/dev/null | grep -iE '\.(webm|wav|m4a|mp4|ogg|opus|mka)$'")"
+RAW="$(mcrun "mc --no-color ls --recursive v/$BUCKET/ 2>/dev/null")"
+# strip any leftover ANSI, keep only media lines
+LIST="$(printf '%s\n' "$RAW" | sed -E 's/\x1b\[[0-9;]*m//g' | grep -iE '\.(webm|wav|m4a|mp4|ogg|opus|mka)')"
 echo "$LIST" | tail -20
 # tercih sırası: audio/master → herhangi master → audio/* → en son medya dosyası
 KEY="$(echo "$LIST" | grep -iE 'audio/.*master' | tail -1 | awk '{print $NF}')"
@@ -35,14 +37,15 @@ KEY="$(echo "$LIST" | grep -iE 'audio/.*master' | tail -1 | awk '{print $NF}')"
 [ -z "$KEY" ] && KEY="$(echo "$LIST" | grep -iE 'audio/' | tail -1 | awk '{print $NF}')"
 [ -z "$KEY" ] && KEY="$(echo "$LIST" | tail -1 | awk '{print $NF}')"
 if [ -z "$KEY" ]; then
-  echo "Medya dosyası bulunamadı. Bucket'taki TÜM içerik:"
-  mcrun "mc ls --recursive v/$BUCKET/ 2>&1 | head -40"
+  echo "Medya dosyası bulunamadı. Bucket'taki TÜM içerik (ham):"
+  printf '%s\n' "$RAW" | head -40
   exit 1
 fi
+echo "→ seçilen key: $KEY"
 
 echo
 echo "== İndiriliyor: $KEY =="
-mcrun "mc cp 'v/$BUCKET/$KEY' /out/real-meeting.webm >/dev/null 2>&1 && echo indi" || { echo "indirme başarısız"; exit 1; }
+mcrun "mc --no-color cp 'v/$BUCKET/$KEY' /out/real-meeting.webm 2>&1 | tail -1" || { echo "indirme başarısız"; exit 1; }
 ls -la real-meeting.webm
 
 hit(){  # name url token

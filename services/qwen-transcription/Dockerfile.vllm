@@ -10,6 +10,11 @@
 #     -f services/qwen-transcription/Dockerfile.vllm services/qwen-transcription
 FROM vllm/vllm-openai:latest
 
+# Audio support: the base vllm-openai image ships WITHOUT the audio extras, so
+# /v1/audio/transcriptions raises "Please install vllm[audio]" → "Invalid or
+# unsupported audio file". soundfile (libsndfile decode) + librosa (resample) fix it.
+RUN pip install --no-cache-dir soundfile librosa
+
 ARG QWEN_MODEL=Qwen/Qwen3-ASR-1.7B
 RUN python3 -c "from huggingface_hub import snapshot_download as d; d('${QWEN_MODEL}'); print('model baked')"
 

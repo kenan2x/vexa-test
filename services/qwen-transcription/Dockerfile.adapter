@@ -13,13 +13,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git ffmpeg libsndfile1 curl build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# CPU torch + torchaudio (aligner & Silero VAD run on CPU). torchaudio MUST come
-# from the CPU index too — silero-vad imports it at module load, and the default
-# PyPI build is CUDA-linked (libcudart.so.13 missing → ImportError on a CPU image).
-RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+# Matched CPU torch+torchaudio. BOTH the MMS aligner (ctc-forced-aligner) and
+# Silero VAD import torchaudio; a torch/torchaudio version mismatch throws
+# "undefined symbol: aoti_torch_abi_version", and the default PyPI torchaudio is
+# CUDA-linked ("libcudart.so.13 missing"). So: pin an exact CPU pair, then CONSTRAIN
+# the requirements install so ctc-forced-aligner can't upgrade torch out from under
+# torchaudio. --extra-index-url keeps any torch wheel pull on the CPU index.
+RUN pip install --no-cache-dir torch==2.4.1 torchaudio==2.4.1 \
+        --index-url https://download.pytorch.org/whl/cpu \
+    && printf 'torch==2.4.1\ntorchaudio==2.4.1\n' > /tmp/torch-constraints.txt
 
 COPY services/qwen-transcription/requirements.adapter.txt .
-RUN pip install --no-cache-dir -r requirements.adapter.txt
+RUN pip install --no-cache-dir -c /tmp/torch-constraints.txt \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        -r requirements.adapter.txt \
+    && python -c "import torch, torchaudio; print('torch', torch.__version__, 'torchaudio', torchaudio.__version__); import torchaudio._extension"
 
 # Bake the MMS aligner model for offline runtime
 ARG ALIGN_MODEL=MahmoudAshraf/mms-300m-1130-forced-aligner

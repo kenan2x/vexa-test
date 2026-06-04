@@ -5,14 +5,16 @@
 # compose stack's QWEN_TRANSCRIPTION_SERVICE_URL (…:8084/v1/audio/transcriptions)
 # keeps working unchanged.
 #
-# Bring up:  GPU_DEVICE_ID=0 API_TOKEN=<token> docker compose -f docker-compose.vllm.yml up -d
+# Bring up:  GPU_DEVICE_ID=0 GPU_MEM_UTIL=0.15 API_TOKEN=<token> docker compose -f docker-compose.vllm.yml up -d
+# NOTE: the H200 is SHARED — GPU_MEM_UTIL is a fraction of TOTAL VRAM, not free.
+# 0.6 tries to grab ~84GB and fails if other jobs are running. 0.15 (~21GB) is plenty for 1.7B.
 
 services:
   qwen-vllm:
     image: ${VLLM_IMAGE:-vexa-qwen-vllm:offline}
     container_name: qwen-vllm
     environment:
-      - GPU_MEM_UTIL=${GPU_MEM_UTIL:-0.6}      # raise toward 0.9 if the GPU is free
+      - GPU_MEM_UTIL=${GPU_MEM_UTIL:-0.15}     # frac of TOTAL VRAM (H200 140GB→~21GB). 1.7B is tiny; H200 is shared, so don't grab 0.6
       - MAX_MODEL_LEN=${MAX_MODEL_LEN:-4096}
       - HF_HUB_OFFLINE=1
     shm_size: "4gb"

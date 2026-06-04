@@ -10,7 +10,7 @@ bot ──► qwen-asr (adapter, :8084, CPU) ──► qwen-vllm (:8000, GPU, ba
 ```
 
 - **qwen-vllm** — official vLLM OpenAI server (`vllm serve Qwen/Qwen3-ASR-1.7B
-  --max-model-len 4096 --gpu-memory-utilization 0.6 --enforce-eager`). Model baked
+  --max-model-len 4096 --gpu-memory-utilization 0.15 --enforce-eager`). Model baked
   in for offline. Does the heavy ASR with batching/concurrency.
 - **qwen-adapter** (container name `qwen-asr`, port 8084) — thin CPU FastAPI:
   ffmpeg-normalizes audio, drops too-short drafts (`MIN_AUDIO_SEC`), forwards to
@@ -34,7 +34,7 @@ bash services/qwen-transcription/build.vllm.sh          # proxy auto; override w
 ## Run
 ```bash
 cd services/qwen-transcription
-GPU_DEVICE_ID=0 API_TOKEN=<token> docker compose -f docker-compose.vllm.yml up -d
+GPU_DEVICE_ID=0 GPU_MEM_UTIL=0.15 API_TOKEN=<token> docker compose -f docker-compose.vllm.yml up -d
 docker logs -f qwen-vllm        # wait for "Application startup complete"
 curl -s http://localhost:8084/health     # expect "vllm":true,"aligner":true
 ```
@@ -49,7 +49,10 @@ curl -s -X POST http://localhost:8084/v1/audio/transcriptions \
 ```
 
 ## Tuning
-- `GPU_MEM_UTIL` — raise toward `0.9` when the GPU is free (more KV cache / batching).
+- `GPU_MEM_UTIL` — **fraction of TOTAL VRAM, not free** (H200=140GB → 0.15≈21GB). Default
+  0.15 fits a 1.7B model + KV cache with room to spare. The H200 here is SHARED with other
+  jobs, so do NOT bump to 0.6/0.9 — vLLM pre-allocates that absolute amount and fails to
+  start if it exceeds free VRAM (`Free memory ... less than desired GPU memory utilization`).
 - `MAX_MODEL_LEN` — 4096 is plenty for meeting chunks.
 - `MIN_AUDIO_SEC` — drop garbled short drafts (default 1.2s).
 - `ALIGN_DEVICE=cuda` — move the aligner to GPU if you prefer (needs VRAM headroom).

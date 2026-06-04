@@ -13,8 +13,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git ffmpeg libsndfile1 curl build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# CPU torch (smaller; aligner runs on CPU)
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+# CPU torch + torchaudio (aligner & Silero VAD run on CPU). torchaudio MUST come
+# from the CPU index too — silero-vad imports it at module load, and the default
+# PyPI build is CUDA-linked (libcudart.so.13 missing → ImportError on a CPU image).
+RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 COPY services/qwen-transcription/requirements.adapter.txt .
 RUN pip install --no-cache-dir -r requirements.adapter.txt

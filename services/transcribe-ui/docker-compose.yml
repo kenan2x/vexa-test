@@ -1,0 +1,32 @@
+# Vexa Transcribe UI — browse recordings, listen, transcribe with Whisper/Qwen.
+# Joins the existing compose network to reach minio + the STT services.
+#   docker compose --env-file ../../.env -f docker-compose.yml up -d --build
+# Then open  http://<compose-ip>:8095
+services:
+  transcribe-ui:
+    image: ${UI_IMAGE:-ghcr.io/kenan2x/vexa-transcribe-ui:latest}
+    build: { context: ., dockerfile: Dockerfile }
+    container_name: transcribe-ui
+    ports:
+      - "8095:8095"
+    environment:
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT:-minio:9000}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-vexa-access-key}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-vexa-secret-key}
+      - MINIO_BUCKET=${MINIO_BUCKET:-vexa}
+      - TRANSCRIPTION_SERVICE_URL=${TRANSCRIPTION_SERVICE_URL:-}
+      - TRANSCRIPTION_SERVICE_TOKEN=${TRANSCRIPTION_SERVICE_TOKEN:-}
+      - QWEN_TRANSCRIPTION_SERVICE_URL=${QWEN_TRANSCRIPTION_SERVICE_URL:-}
+      - QWEN_TRANSCRIPTION_SERVICE_TOKEN=${QWEN_TRANSCRIPTION_SERVICE_TOKEN:-}
+      - HTTP_PROXY=
+      - HTTPS_PROXY=
+      - http_proxy=
+      - https_proxy=
+      - NO_PROXY=*
+      - no_proxy=*
+    restart: unless-stopped
+    networks: [vexa]
+networks:
+  vexa:
+    external: true
+    name: ${VEXA_NETWORK:-vexa_vexa}

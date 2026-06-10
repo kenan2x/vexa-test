@@ -2,48 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## ⚠️ First action — every session: orient on the release stage
-
-This repo runs under a **strict stage state machine** (the release protocol). Before
-doing *anything* — coding, testing, shipping — run:
-
-```bash
-python3 tests3/lib/stage.py probe
-```
-
-This prints the current stage, the legal next stages, and a one-line objective. Each
-stage has a contract at `tests3/stages/NN-<name>.md` (objective, inputs, outputs, exit
-condition, and an explicit **may NOT** list). Read the current stage's file before acting.
-
-**Code editing is confined to the `develop` stage** (entered from `plan` or `triage`).
-If asked to do something forbidden by the current stage, refuse with a stage-aware message:
-
-> *"Currently in `<stage>`; that action is forbidden (`<rule>`). To do it, transition
-> via `<legal next stage>`."*
-
-Don't bumble trying to make an out-of-stage request work — state the mismatch and the
-legal transition path. Map of common asks → stage:
-
-| user says | stage |
-|---|---|
-| "debug X / fix Y / write code" | `develop` (from `plan` or `triage`) |
-| "run the tests / check the gate" | `validate` (from `deploy`) |
-| "classify failures / what broke" | `triage` (from `validate` on red) |
-| "validate checklist / sign off" | `human` (from `validate` on green) |
-| "ship it / merge to main" | `ship` (from `human`) |
-| "start a new release / groom issues" | `groom` (from `idle`) |
-
-**You are NOT the user.** Never mark `plan-approval.yaml`, `human-approval.yaml`, or any
-stage's exit condition `approved: true` without the user explicitly saying so this turn.
-Approval is a human signal — your job is to prepare the material, not grant it.
-
-The full model lives in `tests3/README.md`. Stage skills (`0-groom`, `1-plan`, `triage`,
-`7-human`) are invocable and assert their stage on entry.
-
-## Repository structure
-
-The git repo root is the `vexa/` subdirectory (this file lives there). All commands below
-run from that root.
+> This is a **fork** of Vexa-ai/vexa used for experimentation (currently: improving
+> Turkish STT quality). Work directly in the codebase — no special release/stage protocol
+> applies here. Commit per logical change; keep things pragmatic.
 
 ## Architecture (the big picture)
 
@@ -70,8 +31,9 @@ authoritative, complete wiring diagram.
 **Key data flows:**
 - *Transcription* — `meeting-api` join request → `runtime-api` spawns a `vexa-bot`
   container → bot joins via browser (CDP + Playwright), captures per-speaker audio →
-  HTTP to `transcription-service` (Whisper) → segments to Redis streams → collector in
-  `meeting-api` writes to PostgreSQL → `dashboard` reads via gateway.
+  HTTP to `transcription-service` (Whisper / faster-whisper, OpenAI-compatible
+  `/v1/audio/transcriptions`) → segments to Redis streams → collector in `meeting-api`
+  writes to PostgreSQL → `dashboard` reads via gateway.
 - *Agent chat* — `agent-api` → `runtime-api` spawns a `vexa-agent` container (runs Claude
   Code with workspace context) → responses streamed back via SSE.
 - *Scheduler* — not standalone; an in-process worker (Redis sorted sets) that queues timed
@@ -85,19 +47,16 @@ is at `http://localhost:8056` (self-hosted) or `https://api.cloud.vexa.ai` (host
 pub/sub bot commands, scheduler sorted sets), S3/MinIO (recordings).
 
 The runtime is polyglot: Python (FastAPI services, `requirements.txt` / `pyproject.toml`),
-TypeScript/Node (`vexa-bot`, `dashboard`, `packages/*`). `services/README.md` is the
-authoritative wiring diagram; each service and `features/<name>/` has its own README + DoD.
+TypeScript/Node (`vexa-bot`, `dashboard`, `packages/*`).
 
-### Code vs. contract layout
+## Repository layout
 
-- `services/` — deployable services (one container each).
-- `features/<name>/` — cross-service feature docs + DoD contracts (`README.md` + sidecar
-  `dods.yaml`). A feature's `dods.yaml` is the machine-readable source of truth for what
-  "done" means; `README.md` is the human prose.
+- `services/` — deployable services (one container each). `services/README.md` is the wiring diagram.
+- `features/<name>/` — cross-service feature docs (`README.md` + sidecar `dods.yaml`).
 - `packages/` — publishable npm libs (`vexa-cli`, `vexa-client`, `transcript-rendering`).
 - `libs/` — shared Python (`admin-models`, `schema-sync`).
 - `deploy/` — `compose/` (full stack), `lite/` (single container), `helm/` (K8s).
-- `tests3/` — the entire release/validation system (see below).
+- `tests3/` — integration test + quality harness (see below).
 
 ## Common commands
 
@@ -116,15 +75,14 @@ make test                        # resolve changed files → run only affected t
 make what-changed                # dry-run: show which tests `make test` would run
 make full                        # run everything
 
-# Single test, directly (best for local dev):
+# Single integration test, directly (best for local dev):
 ./tests3/tests/webhooks.sh
 make -C tests3 run-test TEST=webhooks MODE=compose
 ```
 `make test` diffs against `main` (override with `BASE=<ref>`), pipes changed paths through
 `tests3/resolve.py` to pick affected targets, and falls back to `smoke` when nothing maps.
 
-**Per-service unit tests** (separate from the `tests3/` integration system — these are what
-CI runs on PRs, see `.github/workflows/test-*.yml`):
+**Per-service unit tests** (what CI runs on PRs, see `.github/workflows/test-*.yml`):
 ```bash
 # Python services (FastAPI) — install editable, then pytest the service's tests/ dir.
 # Skip live-integration files (they need a running stack):
@@ -136,49 +94,21 @@ pytest services/meeting-api/tests/test_webhooks.py::test_name   # a single test
 cd packages/transcript-rendering && npm ci && npm test
 ```
 Per-service CI workflows are **path-triggered** — only `admin-api`, `api-gateway`,
-`meeting-api`, and `packages/*` have dedicated test workflows; changes elsewhere are
-covered by the `tests3/` integration matrix, not unit CI.
+`meeting-api`, and `packages/*` have dedicated test workflows.
+
+### Transcription quality harness (Turkish STT work)
+The STT quality tooling lives in `services/transcription-service/tests/quality/` —
+synthetic TTS-generated datasets with WER/CER metrics and a quality gate:
+```bash
+cd services/transcription-service
+python -m tests.quality.dataset_generate --languages tr   # build TTS dataset
+python -m tests.quality.run_quality --languages tr        # score WER/CER
+```
+Supported languages are declared in `tests/quality/phrases.py` (`LANGUAGES` / `PHRASES`);
+text normalization for metrics is in `tests/quality/metrics.py`.
 
 ### Docs
 ```bash
 make docs        # static drift check (0s)
 make docs-dev    # mintlify dev server on localhost:3000
 ```
-
-## The `tests3/` release system
-
-`tests3/` is not just tests — it's a **nested-loop release protocol** built on five
-primitives. Read `tests3/README.md` for the full model; the essentials:
-
-- **Scope** (`tests3/releases/<id>/scope.yaml`) — the per-release contract: issues,
-  hypotheses, and `proves[]` bindings into the Registry. Declared at `plan`, consumed by
-  every downstream stage.
-- **DoD** (`features/<name>/dods.yaml`) — per-feature "done" contract; `evidence` binds
-  each claim to a Registry check + modes. Missing `dods.yaml` is a hard fail (opt out only
-  with explicit `dods: []  # reason: X`).
-- **Registry** (`tests3/registry.yaml`) — every check, one schema, a `type:` discriminator
-  (`grep | http | env | script`). Grows every release, runs in full every release — that
-  bidirectionality is what makes regressions impossible.
-- **Fresh-infra** — every release provisions from zero (Linode VMs + LKE), validates,
-  tears down. No shared staging.
-- **Stage machine** — the orchestration state, enforced by `tests3/lib/stage.py`.
-
-**Three nested loops:** INNER (`validate → triage → develop → deploy → validate`, fast,
-mechanical) · MIDDLE (`validate green → human → ship`, bounded human attention) · OUTER
-(`ship → market → issues → groom`, real users). Each catches what the cheaper one can't,
-and writes findings back so next release's cheap loop is smarter.
-
-**Validate has three mechanical phases:** PLAN (build execution graph from registry × scope
-× modes; `state:`/`mutates:` drive parallel-vs-serial), EXECUTE (run scripts → emit
-`.state/reports/<mode>/<test>.json`), RESOLVE (`lib/aggregate.py`: evidence → report
-lookup → DoD status → feature confidence → Gate verdict). AI touches nothing from
-plan-build to Gate verdict — that's what keeps the core cheap.
-
-**No "flake" category.** An unreliable check is a **gap** with a root cause (race, timing,
-infra fragility, misowned DoD) — never retry-mask it.
-
-Release-cycle Makefile targets are stage-guarded (`make stage` / `release-groom`,
-`release-plan`, `release-provision`, `release-deploy`, `release-validate`, `release-triage`,
-`release-human`, `release-ship`, `release-teardown`). Each asserts its predecessor stage on
-entry and transitions on success. Test scripts emit deterministic JSON via the
-`test_begin` / `step_*` / `test_end` helpers in `tests3/lib/common.sh`.

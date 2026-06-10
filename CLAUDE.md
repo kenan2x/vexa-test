@@ -61,6 +61,12 @@ services that communicate over **REST and Redis**, not tight coupling. Three lay
 Everything fronts through **`api-gateway`** (port 8000): auth middleware, routing, CORS.
 `dashboard` (Next.js) is the web UI. `mcp` exposes meeting tools to AI agents.
 
+Peripheral services (not on the core transcription path): `calendar-service` (calendar
+sync → scheduled bot joins), `qwen-transcription` (alternative transcription backend to
+the default Whisper `transcription-service`), `transcribe-ui` (standalone transcription
+front-end), `telegram-bot` (Telegram entry point). `services/README.md` is the
+authoritative, complete wiring diagram.
+
 **Key data flows:**
 - *Transcription* — `meeting-api` join request → `runtime-api` spawns a `vexa-bot`
   container → bot joins via browser (CDP + Playwright), captures per-speaker audio →
@@ -116,6 +122,22 @@ make -C tests3 run-test TEST=webhooks MODE=compose
 ```
 `make test` diffs against `main` (override with `BASE=<ref>`), pipes changed paths through
 `tests3/resolve.py` to pick affected targets, and falls back to `smoke` when nothing maps.
+
+**Per-service unit tests** (separate from the `tests3/` integration system — these are what
+CI runs on PRs, see `.github/workflows/test-*.yml`):
+```bash
+# Python services (FastAPI) — install editable, then pytest the service's tests/ dir.
+# Skip live-integration files (they need a running stack):
+pip install -e libs/admin-models/ -e services/meeting-api/
+pytest services/meeting-api/tests/ -v --ignore=services/meeting-api/tests/test_integration_live.py
+pytest services/meeting-api/tests/test_webhooks.py::test_name   # a single test
+
+# Node packages:
+cd packages/transcript-rendering && npm ci && npm test
+```
+Per-service CI workflows are **path-triggered** — only `admin-api`, `api-gateway`,
+`meeting-api`, and `packages/*` have dedicated test workflows; changes elsewhere are
+covered by the `tests3/` integration matrix, not unit CI.
 
 ### Docs
 ```bash

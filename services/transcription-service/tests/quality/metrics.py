@@ -1,14 +1,37 @@
 from __future__ import annotations
 
 import re
+import unicodedata
+from typing import Optional
 
 _PUNCT_RE = re.compile(r"[^\w\s]", flags=re.UNICODE)
 _WS_RE = re.compile(r"\s+", flags=re.UNICODE)
+_COMBINING_DOT = "̇"  # COMBINING DOT ABOVE
+
+# Turkish-correct lowercasing. Python's str.lower() mishandles the dotted/dotless
+# I pair: "İ".lower() yields "i" + U+0307 (combining dot above) and "I".lower()
+# yields "i" (should be "ı" in Turkish). Both break WER/CER because the reference
+# and a correctly-cased hypothesis stop comparing equal. Map the upper forms
+# explicitly, then lower() the rest.
+_TR_UPPER_MAP = {
+    "İ": "i", "I": "ı", "Ş": "ş", "Ğ": "ğ", "Ç": "ç", "Ö": "ö", "Ü": "ü",
+}
 
 
-def normalize_text(text: str) -> str:
-    """Normalize for WER/CER comparisons (simple, multilingual-friendly)."""
-    text = (text or "").strip().lower()
+def _tr_lower(text: str) -> str:
+    return "".join(_TR_UPPER_MAP.get(ch, ch.lower()) for ch in text)
+
+
+def normalize_text(text: str, lang: Optional[str] = None) -> str:
+    """Normalize for WER/CER comparisons (simple, multilingual-friendly).
+
+    Pass ``lang="tr"`` for Turkish-correct lowercasing. Regardless of language we
+    strip a stray U+0307 (combining dot above) so a generic ``str.lower()`` of
+    "İ" still compares equal to a plain "i".
+    """
+    text = unicodedata.normalize("NFC", text or "").strip()
+    text = _tr_lower(text) if lang == "tr" else text.lower()
+    text = text.replace(_COMBINING_DOT, "")
     text = _PUNCT_RE.sub(" ", text)
     text = _WS_RE.sub(" ", text).strip()
     return text
@@ -40,9 +63,9 @@ def _edit_distance(a: list[str], b: list[str]) -> int:
     return prev[-1]
 
 
-def wer(reference: str, hypothesis: str) -> float:
-    ref = normalize_text(reference)
-    hyp = normalize_text(hypothesis)
+def wer(reference: str, hypothesis: str, lang: Optional[str] = None) -> float:
+    ref = normalize_text(reference, lang)
+    hyp = normalize_text(hypothesis, lang)
     ref_words = ref.split() if ref else []
     hyp_words = hyp.split() if hyp else []
     if not ref_words:
@@ -50,9 +73,9 @@ def wer(reference: str, hypothesis: str) -> float:
     return _edit_distance(ref_words, hyp_words) / max(1, len(ref_words))
 
 
-def cer(reference: str, hypothesis: str) -> float:
-    ref = normalize_text(reference)
-    hyp = normalize_text(hypothesis)
+def cer(reference: str, hypothesis: str, lang: Optional[str] = None) -> float:
+    ref = normalize_text(reference, lang)
+    hyp = normalize_text(hypothesis, lang)
     ref_chars = list(ref)
     hyp_chars = list(hyp)
     if not ref_chars:

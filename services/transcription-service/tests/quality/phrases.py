@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-LANGUAGES = ["en", "es", "fr", "de", "it", "pt", "ru"]
+LANGUAGES = ["en", "es", "fr", "de", "it", "pt", "ru", "tr"]
 
 DOMAINS = [
     "general",
@@ -63,6 +63,20 @@ PHRASES: dict[str, list[str]] = {
         "Быстрая коричневая лиса перепрыгивает через ленивую собаку.",
         "Мы тестируем распознавание речи с шумом и тишиной.",
         "Числа: один два три четыре пять.",
+    ],
+    # Turkish: a mix of general sentences plus finance/markets vocabulary
+    # (valör, takas, teminat, saklama), spelled-out numbers ("bin iki yüz elli")
+    # and a date/time, since those are where TR recognition tends to slip.
+    "tr": [
+        "Merhaba, bu transkripsiyon servisi için bir kalite testidir.",
+        "Lütfen bu cümleyi net bir şekilde duyduğunuzu onaylayın.",
+        "Hızlı kahverengi tilki tembel köpeğin üzerinden atlar.",
+        "Konuşma tanımayı gürültü ve sessizlik ile test ediyoruz.",
+        "Valör tarihi yarın ve takas işlemi öğleden sonra tamamlanacak.",
+        "Teminat tutarı bin iki yüz elli lira olarak güncellendi.",
+        "Saklama hesabındaki bakiye ve faiz oranı kontrol edilmeli.",
+        "Lütfen on beş Mart saat on dörtte ödeme talimatını onaylayın.",
+        "Sayılar: bir iki üç dört beş.",
     ],
 }
 
@@ -339,6 +353,16 @@ PHRASES_BY_DOMAIN: dict[str, dict[str, list[str]]] = {
             "Контроль качества нашел дефекты в последней партии.",
             "Проверьте склад и закажите сырье.",
             "Отгрузка задерживается и график нужно обновить.",
+        ],
+    },
+    "tr": {
+        "general": PHRASES["tr"],
+        "finance": [
+            "Valör tarihi yarın ve takas işlemi öğleden sonra tamamlanacak.",
+            "Teminat tutarı bin iki yüz elli lira olarak güncellendi.",
+            "Saklama hesabındaki bakiye ve faiz oranı kontrol edilmeli.",
+            "Lütfen on beş Mart saat on dörtte ödeme talimatını onaylayın.",
+            "Bu çeyrekte gelir arttı ama giderler de yükseldi.",
         ],
     },
 }

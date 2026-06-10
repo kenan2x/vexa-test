@@ -176,8 +176,8 @@ def main() -> None:
                 else:
                     ok = transcript_empty
             else:
-                w = float(wer(expected_text, transcript))
-                c = float(cer(expected_text, transcript))
+                w = float(wer(expected_text, transcript, lang=lang))
+                c = float(cer(expected_text, transcript, lang=lang))
                 thr = _threshold_for(e)
                 ok = w <= thr
         except Exception as ex:

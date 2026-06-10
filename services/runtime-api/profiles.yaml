@@ -55,6 +55,10 @@ profiles:
       https_proxy: ""
       NO_PROXY: "*"
       no_proxy: "*"
+      # Debug: dump per-speaker WAVs to /tmp/raw-capture-{meetingId} for "is the
+      # audio clean?" inspection. Empty (default) = off, no behavior change. Set
+      # RAW_CAPTURE=true in runtime-api's env to enable for a capture session.
+      RAW_CAPTURE: "${RAW_CAPTURE:-}"
     ports:
       "9222/tcp": {}         # CDP debug port
 

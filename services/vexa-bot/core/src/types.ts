@@ -29,6 +29,10 @@ export type BotConfig = {
   // Per-speaker transcription
   transcriptionServiceUrl?: string;   // HTTP endpoint for transcription-service
   transcriptionServiceToken?: string; // Bearer token for transcription-service
+  /** Domain glossary / org terms biased into the Whisper prompt (context biasing).
+   *  Prepended before the rolling confirmed-text context, clipped to Whisper's
+   *  224-token prompt limit. Empty/undefined → behavior unchanged. */
+  transcriptionContext?: string;
 
   // Voice agent / meeting interaction interface
   voiceAgentEnabled?: boolean;  // Enable TTS, chat, screen share capabilities

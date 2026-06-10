@@ -121,19 +121,73 @@ GPU ile doğrulanmadan** merge edilmemeli (brief kuralı). Test regresyon taban�
   harness'ında WER ile karşılaştır; iyileşme kanıtlanırsa flag'i aç.
 
 ---
-<!-- Faz 2, 5, 6, 7: GPU/dış-endpoint gerektiriyor — aşağıda plan + komutlar -->
+## Faz 6 — context biasing  ✅ (kod + birim test burada koşuldu)
 
-## Faz 2 / 5 / 6 / 7 — GPU + dış endpoint gerektiren fazlar (bu konteynerde koşulamaz)
+Whisper `prompt`'una kurum sözlüğü/terminoloji bias'ı ekleyen plumbing. Mevcut prompt
+borusu (`lastConfirmedText` → `transcribe(prompt)`) zaten vardı; sözlüğü onun **önüne**
+prepend edip 224 token'a kırpıyoruz.
 
-Bunlar kod-üstü değişiklik + canlı ölçüm gerektiriyor; **GPU host'ta (paipsap01)**
-yapılmalı. Tasarım + komutlar:
+- **`types.ts`** — `BotConfig.transcriptionContext?: string` (sözlük/terim metni).
+- **`whisper-prompt.ts`** — `buildWhisperPrompt(glossary, lastConfirmed, maxTokens=224)`:
+  sözlüğü başa koyar, bütçeyi aşarsa sözlüğü korur + **en güncel** context kelimelerini
+  (tail) tutar. Boş sözlük → davranış değişmez.
+- **`index.ts`** — prompt kurulum noktasına bağlandı; `transcriptionContext` botConfig'ten
+  okunuyor. Default boş → üretim davranışı aynı (güvenli opt-in).
+
+```
+$ node -e "require('tsx/cjs');require('.../whisper-prompt.test.ts')"  → 8/8 passed
+```
+> **Gated:** Terim isabet metriği (sözlüklü vs sözlüksüz) GPU host'ta `run_quality` ile.
+
+---
+
+## Faz 7 — LLM post-correction  ✅ (kod + birim test burada koşuldu; canlı endpoint gated)
+
+Finalize segmentlere noktalama + terminoloji düzeltmesi için **injected** LLM çağrısı,
+"anlamı değiştirme" guard'lı. Vexa'da yoktu — özgün ekleme.
+
+- **`meeting_api/collector/tr_postcorrect.py`** — bağımlılık-hafif, yan-etkisiz:
+  - `build_correction_request(text, glossary)` → guard'lı sistem prompt'u (anlamı değiştirme,
+    kelime ekleme/çıkarma yok) + sözlük.
+  - `word_change_ratio(orig, corrected)` → kelime değişim oranı (noktalama/büyük-harf
+    **bedava**, sadece gerçek kelime değişimi sayılır).
+  - `correct_segment(text, glossary, llm_call, max_change_ratio=0.4)` → **aşırı müdahale
+    alarmı**: oran sınırı aşılırsa orijinali tutar; `llm_call=None`/hata/boş → orijinal
+    (güvenli opt-in, pipeline'ı asla kırmaz).
+- Gerçek LLM client (LiteLLM gateway) `llm_call` olarak enjekte edilecek.
+
+```
+$ pytest tests/collector/test_tr_postcorrect.py  → 10/10 passed
+```
+> **Gated:** Collector segment pipeline'ına wiring + `llm_call`'ı LiteLLM gateway'e
+> (`llmgw.ai.takasbank.com.tr`, model `takasai-flash`) bağlama + öncesi/sonrası WER —
+> dış ağ/GPU gerektiriyor.
+
+---
+
+## Faz 2 / 5 — saf GPU/ölçüm fazları (kod yok; bu konteynerde koşulamaz)
+
+Env + canlı WER; **GPU host'ta (paipsap01)** yapılmalı:
 
 - **Faz 2 (Config A/B):** `COMPUTE_TYPE=float16` vs `int8`, `MODEL_SIZE=large-v3` vs
-  `-turbo`. Sadece env + `run_quality --languages tr` ile ölçüm; her kombinasyonu tabloya.
+  `-turbo`. Sadece env + `run_quality --languages tr`; her kombinasyon tabloya.
 - **Faz 5 (Eşik kalibrasyonu):** `LOG_PROB_THRESHOLD`/`NO_SPEECH_THRESHOLD`/
   `COMPRESSION_RATIO_THRESHOLD` grid sweep (env + servis restart), hedef: yanlış elenen TR
-  segment ↓. (Faz 4'teki tek-kelime filtre bulgusu da burada incelenmeli.)
-- **Faz 6 (Context biasing):** Bot API `context` alanı → `prompt` başına kurum sözlüğü
-  prepend (mevcut `lastConfirmedText` önüne; 224 token'a kırp). Terim isabet metriği.
-- **Faz 7 (LLM post-correction):** finalize segmentlere LiteLLM hook (llmgw...takasbank),
-  "anlamı değiştirme" guard'lı. WER ↓ + değişen-kelime-oranı sınırı.
+  segment ↓. (Faz 4'teki tek-kelime hallucination filtresi bulgusu da burada incelenmeli.)
+
+---
+
+## Özet — bu seansta ne yapıldı
+
+| Faz | Durum | Burada koşulan test |
+|---|---|---|
+| 1 Türkçe ölçüm | ✅ kod + test | metrics TR 6/6 (pytest+standalone) |
+| 2 Config A/B | ⏸ GPU-gated | — |
+| 3 language=tr plumbing | ✅ zaten döşeli + guard test | client language 5/5 (tsx) |
+| 4 confirmation | ✅ davranış belgelendi (fix gated) | speaker-streams TR 5/5 (tsx) |
+| 5 eşik kalibrasyonu | ⏸ GPU-gated | — |
+| 6 context biasing | ✅ kod + test | whisper-prompt 8/8 (tsx) |
+| 7 LLM post-correction | ✅ kod + test (endpoint gated) | tr_postcorrect 10/10 (pytest) |
+
+**Toplam burada koşulan: 34 assertion/test, hepsi yeşil.** Mutlak WER iyileşmesi her
+fazda Faz 1 harness'ı ile GPU host'ta ölçülüp bu tabloya işlenecek.

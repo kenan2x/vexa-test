@@ -27,6 +27,7 @@ import { ensureBrowserDataDir, syncBrowserDataFromS3, syncBrowserDataToS3, clean
 import { TranscriptionClient } from './services/transcription-client';
 import { SegmentPublisher } from './services/segment-publisher';
 import { SpeakerStreamManager } from './services/speaker-streams';
+import { buildWhisperPrompt } from './services/whisper-prompt';
 import { resolveSpeakerName, clearSpeakerNameCache, isTrackLocked, isNameTaken, reportTrackAudio, getLockedMapping } from './services/speaker-identity';
 import { SileroVAD } from './services/vad';
 import { isHallucination } from './services/hallucination-filter';
@@ -35,6 +36,7 @@ import { RawCaptureService } from './services/raw-capture';
 
 // Module-level variables to store current configuration
 let currentLanguage: string | null | undefined = null;
+let transcriptionContext: string = ''; // Phase 6: domain glossary biased into Whisper prompt
 let currentTask: string | null | undefined = 'transcribe'; // Default task
 let currentRedisUrl: string | null = null;
 let currentConnectionId: string | null = null;
@@ -1351,7 +1353,10 @@ async function initPerSpeakerPipeline(botConfig: BotConfig): Promise<boolean> {
 
       const whisperStartMs = Date.now();
       try {
-        const contextPrompt = speakerManager!.getLastConfirmedText(speakerId);
+        // Phase 6: prepend the configured domain glossary (context biasing) before
+        // the rolling confirmed-text context, clipped to Whisper's 224-token limit.
+        // Empty transcriptionContext → identical to prior behavior.
+        const contextPrompt = buildWhisperPrompt(transcriptionContext, speakerManager!.getLastConfirmedText(speakerId));
         const result = await transcriptionClient.transcribe(audioBuffer, lang || undefined, contextPrompt || undefined);
         telemetry.whisperCalls++;
         telemetry.totalWhisperMs += Date.now() - whisperStartMs;
@@ -2154,6 +2159,7 @@ export async function runBot(botConfig: BotConfig): Promise<void> {// Store botC
 
   // --- UPDATED: Parse and store config values ---
   currentLanguage = botConfig.language;
+  transcriptionContext = (botConfig.transcriptionContext || '').trim();
   allowedLanguages = botConfig.allowedLanguages?.length ? botConfig.allowedLanguages : null;
   currentTask = botConfig.transcribeEnabled === false ? null : (botConfig.task || 'transcribe');
   currentRedisUrl = botConfig.redisUrl;
